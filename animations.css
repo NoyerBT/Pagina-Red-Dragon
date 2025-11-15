@@ -1,0 +1,352 @@
+/* ===================================
+   ANIMACIONES DE ENTRADA - RED DRAGONS
+   =================================== */
+
+/* Pantalla de carga */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.8s ease-out;
+}
+
+.loading-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Logo animado de carga */
+.loading-logo {
+  position: relative;
+  margin-top: 60px;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.loading-logo img {
+  width: 300px;
+  height: auto;
+  filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.8)) drop-shadow(0 0 60px rgba(255, 215, 0, 0.4));
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Spinner de carga */
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  border: 3px solid transparent;
+  border-top: 3px solid #d4af37;
+  border-right: 3px solid #ffd700;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Texto de carga */
+.loading-text {
+  position: absolute;
+  bottom: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #d4af37;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Animaciones de elementos de página */
+.animate-on-load {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-fade-in {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fadeInUp 1s ease-out 0.2s forwards;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeInUp 1s ease-out 0.4s forwards;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fadeInUp 1s ease-out 0.6s forwards;
+}
+
+.animate-fade-in-delay-4 {
+  animation: fadeInUp 1s ease-out 0.8s forwards;
+}
+
+/* Hero title con efecto de escritura */
+.hero-title-animate {
+  opacity: 0;
+  animation: titleReveal 1.5s ease-out 0.5s forwards;
+}
+
+/* Logo hero con escala */
+.hero-logo-animate {
+  opacity: 0;
+  transform: scale(0.8);
+  animation: scaleIn 1s ease-out 0.8s forwards;
+}
+
+/* Botones con efecto de deslizamiento */
+.btn-animate {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUp 0.8s ease-out 1.2s forwards;
+}
+
+/* Navbar con slide desde arriba */
+.navbar-animate {
+  opacity: 0;
+  transform: translateY(-100%);
+  animation: slideDown 0.8s ease-out 0.3s forwards;
+}
+
+/* Logo superior con rotación */
+.top-logo-animate {
+  opacity: 0;
+  transform: rotate(-10deg) scale(0.8);
+  animation: logoEntrance 1s ease-out 0.5s forwards;
+}
+
+/* Efecto de partículas de fondo */
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #d4af37;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particleFloat 8s linear infinite;
+  opacity: 0;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.9), 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* Efecto de brillo en hover mejorado */
+.glow-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-on-hover::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.5), transparent);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.glow-on-hover:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ===================================
+   KEYFRAMES
+   =================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes titleReveal {
+  from {
+    opacity: 0;
+    letter-spacing: 0.3em;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.1em;
+    filter: blur(0);
+  }
+}
+
+@keyframes logoEntrance {
+  from {
+    opacity: 0;
+    transform: rotate(-10deg) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.7));
+  }
+  50% {
+    filter: drop-shadow(0 0 50px rgba(255, 215, 0, 1));
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-1000px) translateX(var(--drift, 0));
+  }
+}
+
+/* Animación de glitch para títulos (opcional) */
+@keyframes glitch {
+  0% {
+    text-shadow: 0.05em 0 0 rgba(212, 175, 55, 0.75),
+                -0.05em -0.025em 0 rgba(255, 215, 0, 0.75),
+                -0.025em 0.05em 0 rgba(201, 165, 86, 0.75);
+  }
+  14% {
+    text-shadow: 0.05em 0 0 rgba(212, 175, 55, 0.75),
+                -0.05em -0.025em 0 rgba(255, 215, 0, 0.75),
+                -0.025em 0.05em 0 rgba(201, 165, 86, 0.75);
+  }
+  15% {
+    text-shadow: -0.05em -0.025em 0 rgba(212, 175, 55, 0.75),
+                0.025em 0.025em 0 rgba(255, 215, 0, 0.75),
+                -0.05em -0.05em 0 rgba(201, 165, 86, 0.75);
+  }
+  49% {
+    text-shadow: -0.05em -0.025em 0 rgba(212, 175, 55, 0.75),
+                0.025em 0.025em 0 rgba(255, 215, 0, 0.75),
+                -0.05em -0.05em 0 rgba(201, 165, 86, 0.75);
+  }
+  50% {
+    text-shadow: 0.025em 0.05em 0 rgba(212, 175, 55, 0.75),
+                0.05em 0 0 rgba(255, 215, 0, 0.75),
+                0 -0.05em 0 rgba(201, 165, 86, 0.75);
+  }
+  99% {
+    text-shadow: 0.025em 0.05em 0 rgba(212, 175, 55, 0.75),
+                0.05em 0 0 rgba(255, 215, 0, 0.75),
+                0 -0.05em 0 rgba(201, 165, 86, 0.75);
+  }
+  100% {
+    text-shadow: -0.025em 0 0 rgba(212, 175, 55, 0.75),
+                -0.025em -0.025em 0 rgba(255, 215, 0, 0.75),
+                -0.025em -0.05em 0 rgba(201, 165, 86, 0.75);
+  }
+}
+
+.glitch-effect {
+  animation: glitch 1s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 950px) {
+  .loading-logo {
+    margin-top: 40px;
+  }
+  
+  .loading-logo img {
+    width: 200px;
+  }
+  
+  .loading-spinner {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .loading-text {
+    font-size: 1rem;
+    bottom: 28%;
+  }
+}
