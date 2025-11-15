@@ -83,10 +83,10 @@ body {
 }
 
 .nav-links a:hover {
-  color: #ffd700;
-  text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 25px rgba(212, 175, 55, 0.5);
-  background: rgba(212, 175, 55, 0.1);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(255, 107, 53, 0.8), 0 0 25px rgba(255, 77, 0, 0.5);
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.8), rgba(255, 77, 0, 0.6));
+  box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
   transform: translateY(-2px);
 }
 
@@ -97,10 +97,10 @@ body {
   bottom: -0.3rem;
   width: 0;
   height: 3px;
-  background: linear-gradient(90deg, #d4af37, #ffd700, #c9a556);
+  background: linear-gradient(90deg, #ff6b35, #ff4d00, #ff8c42);
   border-radius: 2px;
   transition: width 0.3s ease-out;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 10px rgba(255, 77, 0, 0.6);
 }
 
 .nav-links a:hover::after {
@@ -161,7 +161,7 @@ body {
   text-transform: uppercase;
   font-size: 0.9rem;
   letter-spacing: 0.09em;
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background 0.15s ease-out;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background 0.15s ease-out, color 0.15s ease-out;
 }
 
 .btn.primary {
@@ -170,9 +170,19 @@ body {
   box-shadow: 0 0 18px rgba(212, 175, 55, 0.6);
 }
 
+.btn.primary:hover {
+  background: linear-gradient(135deg, #ff6b35, #ff4d00);
+  color: #ffffff;
+  box-shadow: 0 0 25px rgba(255, 77, 0, 0.8);
+}
+
 .btn.secondary {
   background: transparent;
   color: #ffd700;
+}
+
+.btn.secondary:hover {
+  background: rgba(212, 175, 55, 0.15);
 }
 
 .btn:hover {
