@@ -1,5 +1,5 @@
 <?php
-// Página del Torneo - Red Dragons Cup
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -21,6 +21,12 @@
       <a href="torneo.php">Torneo</a>
       <a href="anticheats.php">Anticheats</a>
       <a href="contacto.php">Contacto</a>
+      <?php if (isset($_SESSION['usuario'])): ?>
+        <a href="dashboard.php">Mi Cuenta</a>
+        <a href="logout.php">Cerrar Sesión</a>
+      <?php else: ?>
+        <a href="login.php">Iniciar Sesión</a>
+      <?php endif; ?>
     </nav>
   </header>
 

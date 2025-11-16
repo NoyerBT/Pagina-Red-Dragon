@@ -1,5 +1,5 @@
 <?php
-// Página de Anticheats - Red Dragons Cup
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -21,6 +21,12 @@
       <a href="torneo.php">Torneo</a>
       <a href="anticheats.php">Anticheats</a>
       <a href="contacto.php">Contacto</a>
+      <?php if (isset($_SESSION['usuario'])): ?>
+        <a href="dashboard.php">Mi Cuenta</a>
+        <a href="logout.php">Cerrar Sesión</a>
+      <?php else: ?>
+        <a href="login.php">Iniciar Sesión</a>
+      <?php endif; ?>
     </nav>
   </header>
 
@@ -31,6 +37,19 @@
       <p class="subtitle">Protección avanzada para un juego limpio y competitivo.</p>
     </section>
   </main>
+
+<section class="section" id="cta-anticheat">
+    <div class="plan-actions" style="text-align: center; padding: 2rem 0;">
+        <?php if (isset($_SESSION['usuario'])): ?>
+            <a href="generar_claves.php" class="btn primary plan-btn glow-on-hover" style="margin-right: 10px;">Generar Claves</a>
+            <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="btn secondary plan-btn glow-on-hover">Descargar Anticheat</a>
+        <?php else: ?>
+            <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="btn secondary plan-btn glow-on-hover">Descargar Anticheat</a>
+            <a href="registro.php" class="btn primary plan-btn glow-on-hover">Adquirir Plan</a>
+            <p class="plan-note" style="margin-top: 1rem;">Necesitas crear una cuenta para continuar</p>
+        <?php endif; ?>
+    </div>
+  </section>
 
   <section class="section" id="anticheat-info">
     <h2>¿Qué es nuestro Anticheat?</h2>
@@ -81,10 +100,6 @@
           </ul>
         </div>
         
-        <div class="plan-actions">
-          <a href="registro.php" class="btn primary plan-btn">Adquirir Plan</a>
-          <p class="plan-note">Necesitas crear una cuenta para continuar</p>
-        </div>
       </div>
     </div>
   </section>
