@@ -140,9 +140,12 @@ body {
 }
 
 .subtitle {
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   color: #d0d0d0;
   margin-bottom: 1.8rem;
+  font-family: 'Segoe UI', 'Roboto', 'Poppins', sans-serif;
+  line-height: 1.8;
+  font-weight: 400;
 }
 
 .hero-buttons {

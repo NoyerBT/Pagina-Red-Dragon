@@ -34,7 +34,10 @@ session_start();
     <section class="hero-content">
       <h1>Torneo Red Dragons Cup</h1>
       <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
-      <p class="subtitle">Información completa del torneo y equipos participantes.</p>
+      <p class="subtitle">Torneo RDC reúne a los equipos más destacados de la comunidad competitiva de left 4 dead 2 en una experiencia competitiva diseñada 
+        para destacar el talento, la disciplina y el juego limpio. Aquí encontrarás todos los detalles esenciales del evento, desde las reglas hasta 
+        los premios y requisitos de participación. Prepárate para formar parte de una competencia creada para vibrar, crecer y demostrar de qué está 
+        hecho tu equipo en los futuros torneos y eventos.</p>
     </section>
   </main>
 
@@ -43,19 +46,19 @@ session_start();
     <div class="torneo-grid">
       <div class="torneo-card">
         <h3>🏆 Premio</h3>
-        <p>$XXXX en efectivo</p>
+        <p>50 USD</p>
       </div>
       <div class="torneo-card">
         <h3>🎮 Modalidad</h3>
-        <p>5v5 Competitivo</p>
+        <p>4v4 Zonemod Competitivo</p>
       </div>
       <div class="torneo-card">
         <h3>📅 Fecha</h3>
-        <p>Por definir</p>
+        <p>INICIO 1RO DE NOVIEMBRE 2025</p>
       </div>
       <div class="torneo-card">
         <h3>⚡ Plataforma</h3>
-        <p>PC / Consola</p>
+        <p>PC</p>
       </div>
     </div>
   </section>
@@ -65,6 +68,11 @@ session_start();
     <p>Aquí se mostrarán los equipos registrados una vez que comience la inscripción.</p>
     <div class="equipos-placeholder">
       <p>🔄 Próximamente: Lista de equipos inscritos</p>
+    </div>
+    <div class="brackets-button-container">
+      <a href="brackets.php" class="btn-brackets">
+        <span>📋</span> Ver Brackets del Torneo
+      </a>
     </div>
   </section>
 
