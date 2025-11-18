@@ -2,9 +2,9 @@
 session_start();
 require_once 'cnt/conexion.php';
 
-// Verificar que el usuario es administrador
-if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'admin') {
-    header('Location: index.php');
+// Verificar que el usuario accedió mediante el panel de administración
+if (!isset($_SESSION['admin_usuario'])) {
+    header('Location: admin/index.php');
     exit();
 }
 

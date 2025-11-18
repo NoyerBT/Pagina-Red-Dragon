@@ -7,7 +7,7 @@ if ($is_localhost) {
     $servername = "localhost";
     $username = "root";
     $password = "";
-    $dbname = "red_dragons_db";
+    $dbname = "RDC";
 } else {
     // Configuración para Producción (InfinityFree)
     $servername = "sql201.infinityfree.com";
