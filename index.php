@@ -21,6 +21,7 @@ session_start();
       <a href="torneo.php">Torneo</a>
       <a href="anticheats.php">Anticheats</a>
       <a href="contacto.php">Contacto</a>
+      <a href="brackets.php">Clasificación</a>
       <?php if (isset($_SESSION['usuario'])): ?>
         <a href="dashboard.php">Mi Cuenta</a>
         <a href="logout.php">Cerrar Sesión</a>
