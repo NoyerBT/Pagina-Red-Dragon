@@ -4,6 +4,10 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: radial-gradient(circle at top, #0a0a0a 0%, #000000 50%, #000000 100%);
@@ -220,11 +224,64 @@ body {
   color: #ffd700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
+  text-align: center;
 }
 
 .section p {
   color: #e0e0e0;
   line-height: 1.6;
+}
+
+.about-section {
+  text-align: center;
+}
+
+.about-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.about-item {
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 16px;
+  padding: 1.8rem;
+  text-align: left;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.about-item h3 {
+  color: #ffd700;
+  font-size: 1.25rem;
+  margin-bottom: 0.9rem;
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+
+.about-item p {
+  margin: 0;
+}
+
+.about-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.about-list li {
+  position: relative;
+  padding-left: 1.4rem;
+}
+
+.about-list li::before {
+  content: "•";
+  color: #ffd700;
+  position: absolute;
+  left: 0;
 }
 
 .footer {

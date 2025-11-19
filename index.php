@@ -37,7 +37,7 @@ session_start();
       <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
       <p class="subtitle">Torneo para verdaderas leyendas.</p>
       <div class="hero-buttons">
-        <a href="#registro" class="btn primary">Mas Informacion</a>
+        <a href="#equipos" class="btn primary">Mas Informacion</a>
         <a href="#equipos" class="btn secondary">Ver reglas</a>
       </div>
       <div class="info-tags">
@@ -48,25 +48,49 @@ session_start();
     </section>
   </main>
 
-  <section class="section" id="equipos">
-    <h2>Equipos y Formato</h2>
-    <p>Describe aquí cuántos equipos participan, formato (grupos, eliminación directa, Bo1/Bo3), horarios, etc.</p>
+  <section class="section about-section" id="equipos">
+    <h2>SOBRE NUESTRA PAGINA</h2>
+    <div class="about-wrapper">
+      <article class="about-item">
+        <h3>¿QUÉ ES RDC?</h3>
+        <p>
+          Esta página es una plataforma de la Red Dragon Cup, torneo del videojuego Left 4 Dead 2 diseñado para la comunidad y los jugadores que buscan una experiencia seria, organizada y con un ambiente de alto nivel. Nuestra página reúne toda la información oficial del torneo, desde reglas y clasificación hasta anuncios importantes y contenido exclusivo del torneo.
+        </p>
+      </article>
+
+      <article class="about-item">
+        <h3>NUESTRA MISIÓN</h3>
+        <p>
+          Queremos ofrecer un torneo transparente, justo y emocionante, donde cada equipo tenga la oportunidad de demostrar su habilidad y competir en igualdad de condiciones. RDC nace con el objetivo de fortalecer la escena competitiva y brindar un espacio donde la comunidad pueda crecer, participar y disfrutar.
+        </p>
+      </article>
+
+      <article class="about-item">
+        <h3>¿QUÉ OFRECEMOS?</h3>
+        <ul class="about-list">
+          <li>Torneos organizados profesionalmente con formatos claros, grupos o eliminación directa.</li>
+          <li>Clasificaciones y estadísticas actualizadas para mantener a la comunidad informada.</li>
+          <li>Reglamento detallado para garantizar un ambiente justo y competitivo.</li>
+          <li>Sistema de contacto directo para resolver dudas o enviar documentos.</li>
+          <li>Premios y reconocimientos para los mejores equipos.</li>
+        </ul>
+      </article>
+
+      <article class="about-item">
+        <h3>COMUNIDAD Y TRANSPARENCIA</h3>
+        <p>
+          Creemos en la comunicación abierta con los participantes, por eso nuestro portal está diseñado para que cualquier jugador o equipo pueda acceder de forma rápida a la información más relevante. Cada cambio, actualización o anuncio se publicará directamente aquí.
+        </p>
+      </article>
+
+      <article class="about-item">
+        <h3>ÚNETE A LA EXPERIENCIA</h3>
+        <p>
+          Si eres competitivo, si disfrutas de los desafíos y si buscas un torneo donde tu habilidad realmente importe, entonces estás en el lugar correcto. RDC no es solo un torneo: es una arena para leyendas.
+        </p>
+      </article>
+    </div>
   </section>
-
-  <section class="section" id="registro">
-    <h2>Registro</h2>
-    <p>Indica el enlace o las instrucciones para que los jugadores/equipos se inscriban al torneo.</p>
-  </section>
-
-  <section class="section" id="contacto">
-    <h2>Contacto</h2>
-    <p>Agrega tu Discord, correo o redes sociales para resolver dudas de los participantes.</p>
-  </section>
-
-  <footer class="footer">
-    <p>&copy; <span id="year"></span> Red Dragons Championship. Todos los derechos reservados.</p>
-  </footer>
-
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>
 </body>
