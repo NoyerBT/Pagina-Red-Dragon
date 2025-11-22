@@ -25,18 +25,24 @@ session_start();
     </nav>
   </header>
 
-  <main class="hero">
+  <main class="hero hero--anticheat">
     <section class="hero-content">
       <h1>Crear Cuenta</h1>
       <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
-      <p class="subtitle">Regístrate para acceder al plan anticheat premium.</p>
+      <p class="subtitle hero-tagline">Regístrate para acceder al plan anticheat premium.</p>
     </section>
   </main>
 
   <section class="section" id="registro-form">
     <div class="registro-container">
       <div class="registro-card">
-        <h2>📝 Información Personal</h2>
+        <div class="registro-card__logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="presentation">
+            <circle cx="32" cy="20" r="12" stroke="currentColor" stroke-width="2.5" fill="none" />
+            <path d="M12 54c0-10.5 9-19 20-19s20 8.5 20 19" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          </svg>
+        </div>
+        <p class="registro-card__title">Rellena tu información</p>
         <form class="registro-form" action="procesar_registro.php" method="POST">
           
           <div class="form-row">
@@ -102,9 +108,9 @@ session_start();
               <p><strong>Plan Anticheat Premium</strong></p>
               <p>Precio: <span class="price-highlight">S/ 30.00 / mes</span></p>
               <ul>
-                <li>✓ Protección anticheat 24/7</li>
-                <li>✓ Acceso a torneos oficiales</li>
-                <li>✓ Soporte técnico prioritario</li>
+                <li>✓ Soporte 24/7</li>
+                <li>✓ Acceso a canal privado de Whatsapp</li>
+                <li>✓ Uso de futuras actualizaciones</li>
               </ul>
             </div>
           </div>
@@ -112,19 +118,19 @@ session_start();
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
               <input type="checkbox" name="terminos" required>
-              Acepto los <a href="#" target="_blank">términos y condiciones</a>
+              Acepto los <a href="terminos.php" target="_blank">términos y condiciones</a>
             </label>
           </div>
           
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
               <input type="checkbox" name="privacidad" required>
-              Acepto la <a href="#" target="_blank">política de privacidad</a>
+              Acepto la <a href="privacidad.php" target="_blank">política de privacidad</a>
             </label>
           </div>
           
-          <button type="submit" class="btn primary registro-btn">
-            Crear Cuenta y Proceder al Pago
+          <button type="submit" class="registro-btn">
+            <span>Crear Cuenta y Proceder al Pago</span>
           </button>
           
           <p class="login-link">
@@ -143,16 +149,16 @@ session_start();
         <p>Visa, Mastercard, American Express</p>
       </div>
       <div class="payment-card">
-        <h3>📱 Yape / Plin</h3>
+        <h3>📱 Yape</h3>
         <p>Pago móvil instantáneo</p>
       </div>
       <div class="payment-card">
         <h3>🏦 Transferencia Bancaria</h3>
-        <p>BCP, Interbank, BBVA, Scotiabank</p>
+        <p>BCP</p>
       </div>
       <div class="payment-card">
         <h3>💰 PagoEfectivo</h3>
-        <p>Paga en efectivo en tiendas afiliadas</p>
+        <p>"Aun en desarrollo"</p>
       </div>
     </div>
   </section>

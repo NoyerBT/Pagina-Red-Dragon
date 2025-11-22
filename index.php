@@ -20,8 +20,8 @@ session_start();
       <a href="index.php">Inicio</a>
       <a href="torneo.php">Torneo</a>
       <a href="anticheats.php">Anticheats</a>
-      <a href="contacto.php">Contacto</a>
       <a href="brackets.php">Clasificación</a>
+      <a href="contacto.php">Contacto</a>
       <?php if (isset($_SESSION['usuario'])): ?>
         <a href="dashboard.php">Mi Cuenta</a>
         <a href="logout.php">Cerrar Sesión</a>
@@ -38,7 +38,7 @@ session_start();
       <p class="subtitle">Torneo para verdaderas leyendas.</p>
       <div class="hero-buttons">
         <a href="#equipos" class="btn primary">Mas Informacion</a>
-        <a href="#equipos" class="btn secondary">Ver reglas</a>
+        <button type="button" class="btn secondary" id="open-rules">Ver reglas</button>
       </div>
       <div class="info-tags">
         <span>Premio: $50</span>
@@ -47,6 +47,24 @@ session_start();
       </div>
     </section>
   </main>
+
+  <section class="rules-modal" id="rules-modal" aria-hidden="true" role="dialog" aria-label="Reglas del torneo">
+    <div class="rules-modal__backdrop" data-close-modal></div>
+    <div class="rules-modal__dialog" role="document">
+      <button type="button" class="rules-modal__close" aria-label="Cerrar" data-close-modal>&times;</button>
+      <p class="rules-modal__eyebrow">𝙍𝙀𝙂𝙇𝘼𝙎 𝘿𝙀𝙇 𝙏𝙊𝙍𝙉𝙀𝙊 𝙍𝘿𝘾 2025</p>
+      <h3>𝙍𝙀𝙂𝙇𝘼𝙎 𝙋𝘼𝙍𝘼 𝙄𝙉𝙎𝘾𝙍𝙄𝘽𝙄𝙍𝙎𝙀</h3>
+      <ol class="rules-list">
+        <li>El mínimo de horas para participar es de 600 hrs a más.</li>
+        <li>Los participantes no deberán tener baneos por cheats en ninguna comunidad.</li>
+        <li>Debes registrarte con tu cuenta principal.</li>
+        <li>Durante el periodo de inscripciones los perfiles de los jugadores tienen que ser públicos en todos los ámbitos para poder confirmar que cumplen los requisitos.</li>
+        <li>Un participante no debe estar inscrito en más de un equipo al mismo tiempo.</li>
+        <li>Cada equipo debe tener un nombre y logo de manera obligatoria, con un máximo de 6 integrantes.</li>
+        <li>El nombre del equipo y el logo no deben contener imágenes implícitas, sexuales, racistas, homofóbicas o referencias; esto también aplica a los nombres de los participantes registrados.</li>
+      </ol>
+    </div>
+  </section>
 
   <section class="section about-section" id="equipos">
     <h2>SOBRE NUESTRA PAGINA</h2>

@@ -30,25 +30,43 @@ session_start();
     </nav>
   </header>
 
-  <main class="hero">
+  <main class="hero hero--anticheat">
     <section class="hero-content">
       <h1>Sistema Anticheat</h1>
       <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
-      <p class="subtitle">Protección avanzada para un juego limpio y competitivo.</p>
+      <p class="subtitle hero-tagline">Protección avanzada para un juego limpio y competitivo.</p>
     </section>
   </main>
 
-<section class="section" id="cta-anticheat">
-    <div class="plan-actions" style="text-align: center; padding: 2rem 0;">
-        <?php if (isset($_SESSION['usuario'])): ?>
-            <a href="generar_claves.php" class="btn primary plan-btn glow-on-hover" style="margin-right: 10px;">Generar Claves</a>
-            <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="btn secondary plan-btn glow-on-hover">Descargar Anticheat</a>
-        <?php else: ?>
-            <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="btn secondary plan-btn glow-on-hover">Descargar Anticheat</a>
-            <a href="registro.php" class="btn primary plan-btn glow-on-hover">Adquirir Plan</a>
-            <p class="plan-note" style="margin-top: 1rem;">Necesitas crear una cuenta para continuar</p>
-        <?php endif; ?>
+  <section class="section" id="cta-anticheat">
+    <div class="plan-actions">
+      <?php if (isset($_SESSION['usuario'])): ?>
+        <a href="generar_claves.php" class="btn primary plan-btn glow-on-hover plan-actions__btn">Generar Claves</a>
+        <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="cta-download plan-actions__btn">
+          <span>Descargar Anticheat</span>
+          <svg fill="none" viewBox="0 0 24 24" class="cta-download__arrow" aria-hidden="true">
+            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </a>
+      <?php else: ?>
+        <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="cta-download plan-actions__btn">
+          <span>Descargar Anticheat</span>
+          <svg fill="none" viewBox="0 0 24 24" class="cta-download__arrow" aria-hidden="true">
+            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </a>
+        <a href="registro.php" class="cta-glow plan-actions__btn">
+          <div class="cta-glow__display">
+            <div class="cta-glow__text">Adquirir Plan</div>
+          </div>
+          <span></span>
+          <span></span>
+        </a>
+      <?php endif; ?>
     </div>
+    <?php if (!isset($_SESSION['usuario'])): ?>
+      <p class="plan-note plan-note--highlight">Necesitas crear una cuenta para continuar</p>
+    <?php endif; ?>
   </section>
 
   <section class="section" id="anticheat-info">
@@ -78,29 +96,40 @@ session_start();
   <section class="section" id="plan-anticheat">
     <h2>Plan Anticheat Premium</h2>
     <div class="plan-container">
-      <div class="plan-card premium">
-        <div class="plan-header">
+      <article class="plan-card-modern">
+        <div class="plan-card-modern__border"></div>
+        <div class="plan-card-modern__title-group">
+          <span class="plan-card-modern__eyebrow">Protección total</span>
           <h3>🏆 Plan Premium</h3>
-          <div class="price">
+          <p class="plan-card-modern__price">
             <span class="currency">S/</span>
             <span class="amount">30</span>
             <span class="period">/mes</span>
-          </div>
+          </p>
+          <p class="plan-card-modern__subtitle">La mejor defensa contra cheats para equipos competitivos.</p>
         </div>
-        
-        <div class="plan-features">
-          <h4>✅ Incluye:</h4>
-          <ul>
-            <li>✓ Protección anticheat 24/7</li>
-            <li>✓ Acceso a torneos oficiales</li>
-            <li>✓ Soporte técnico prioritario</li>
-            <li>✓ Estadísticas detalladas</li>
-            <li>✓ Badge exclusivo de jugador verificado</li>
-            <li>✓ Actualizaciones automáticas</li>
-          </ul>
-        </div>
-        
-      </div>
+        <hr class="plan-card-modern__divider" />
+        <ul class="plan-card-modern__list">
+          <?php $planFeatures = [
+            'Soporte 24/7',
+            'Acceso a canal privado de whatssapp',
+            'Soporte técnico prioritario',
+            'Rol en discord',
+            'Uso de futuras actualizaciones'
+          ]; ?>
+          <?php foreach ($planFeatures as $feature): ?>
+            <li class="plan-card-modern__list-item">
+              <span class="plan-card-modern__check">
+                <svg class="plan-card-modern__check-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" />
+                </svg>
+              </span>
+              <span class="plan-card-modern__list-text"><?= $feature ?></span>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+        <a href="registro.php" class="plan-card-modern__cta">Adquirir Plan</a>
+      </article>
     </div>
   </section>
 
