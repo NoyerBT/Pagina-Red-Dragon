@@ -34,18 +34,18 @@ let lastScrollTop = 0;
 const navbar = document.querySelector('.top-bar');
 const logo = document.querySelector('.top-logo-section');
 
-window.addEventListener('scroll', function() {
-  let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  
-  if (scrollTop > lastScrollTop && scrollTop > 100) {
-    // Bajando y ya pasó 100px - ocultar barra y logo
-    navbar.classList.add('hidden');
-    logo.classList.add('hidden');
-  } else {
-    // Subiendo - mostrar barra y logo
-    navbar.classList.remove('hidden');
-    logo.classList.remove('hidden');
-  }
-  
-  lastScrollTop = scrollTop;
-});
+if (navbar && logo) {
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop > lastScrollTop && scrollTop > 120) {
+      navbar.classList.add('hidden');
+      logo.classList.add('hidden');
+    } else {
+      navbar.classList.remove('hidden');
+      logo.classList.remove('hidden');
+    }
+
+    lastScrollTop = scrollTop;
+  });
+}
