@@ -36,13 +36,33 @@ document.addEventListener('DOMContentLoaded', function() {
 function createLoadingScreen() {
   const loadingScreen = document.createElement('div');
   loadingScreen.className = 'loading-screen';
-  loadingScreen.innerHTML = `
-    <div class="loading-spinner"></div>
-    <div class="loading-logo">
-      <img src="Img/imagen de carga.png" alt="Loading">
-    </div>
-    <div class="loading-text">Cargando...</div>
-  `;
+  
+  // CONFIGURACIÓN: Cambia esta variable para usar video o spinner
+  const useVideo = true; // true = usar video, false = usar spinner tradicional
+  const videoPath = 'Img/loading-video.mp4'; // Ruta de tu video
+  
+  if (useVideo) {
+    // Pantalla de carga con VIDEO
+    loadingScreen.innerHTML = `
+      <div class="loading-video">
+        <video autoplay muted loop playsinline>
+          <source src="${videoPath}" type="video/mp4">
+          Tu navegador no soporta el elemento de video.
+        </video>
+      </div>
+      <div class="loading-text">Cargando...</div>
+    `;
+  } else {
+    // Pantalla de carga con SPINNER tradicional
+    loadingScreen.innerHTML = `
+      <div class="loading-spinner"></div>
+      <div class="loading-logo">
+        <img src="Img/imagen de carga.png" alt="Loading">
+      </div>
+      <div class="loading-text">Cargando...</div>
+    `;
+  }
+  
   document.body.prepend(loadingScreen);
 }
 
@@ -59,16 +79,10 @@ function hideLoadingScreen() {
 
 // Animar elementos de la página
 function animatePageElements() {
-  // Animar navbar
+  // Animar navbar completo (incluye logo integrado)
   const navbar = document.querySelector('.top-bar');
   if (navbar) {
     navbar.classList.add('navbar-animate');
-  }
-  
-  // Animar logo superior
-  const topLogo = document.querySelector('.top-logo-section');
-  if (topLogo) {
-    topLogo.classList.add('top-logo-animate');
   }
   
   // Animar título hero

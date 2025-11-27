@@ -36,16 +36,17 @@ if ($user['fecha_expiracion']) {
 </head>
 <body>
   <div class="bg-overlay"></div>
-  <div class="top-logo-section">
-    <img src="Img/Logo left 4.png" alt="Logo Left 4 Dead" class="top-logo" />
-  </div>
   <header class="top-bar">
+    <div class="top-logo-section">
+      <img src="Img/Logo left 4.png" alt="Logo Left 4 Dead" class="top-logo" />
+    </div>
     <nav class="nav-links">
-      <a href="index.php">Inicio</a>
-      <a href="torneo.php">Torneos</a>
-      <a href="anticheats.php">Anticheats</a>
-      <a href="contacto.php">Contacto</a>
-      <a href="logout.php">Cerrar Sesión</a>
+      <a href="index.php">INICIO</a>
+      <a href="torneo.php">TORNEO</a>
+      <a href="anticheats.php">ANTICHEATS RDC</a>
+      <a href="contacto.php">CONTACTO</a>
+      <a href="dashboard.php">MI CUENTA</a>
+      <a href="logout.php">CERRAR SESIÓN</a>
     </nav>
   </header>
 

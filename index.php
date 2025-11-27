@@ -12,21 +12,22 @@ session_start();
 </head>
 <body>
   <div class="bg-overlay"></div>
-  <div class="top-logo-section">
-    <img src="Img/Logo left 4.png" alt="Logo Left 4 Dead" class="top-logo" />
-  </div>
   <header class="top-bar">
+    <div class="top-logo-section">
+      <img src="Img/Logo left 4.png" alt="Logo Left 4 Dead" class="top-logo" />
+    </div>
     <nav class="nav-links">
-      <a href="index.php">Inicio</a>
-      <a href="torneo.php">Torneo</a>
-      <a href="anticheats.php">Anticheats</a>
-      <a href="brackets.php">Clasificación</a>
-      <a href="contacto.php">Contacto</a>
+      <a href="index.php">INICIO</a>
       <?php if (isset($_SESSION['usuario'])): ?>
-        <a href="dashboard.php">Mi Cuenta</a>
-        <a href="logout.php">Cerrar Sesión</a>
+        <a href="torneo.php">TORNEO</a>
+      <?php endif; ?>
+      <a href="anticheats.php">ANTICHEATS RDC</a>
+      <a href="contacto.php">CONTACTO</a>
+      <?php if (isset($_SESSION['usuario'])): ?>
+        <a href="dashboard.php">MI CUENTA</a>
+        <a href="logout.php">CERRAR SESIÓN</a>
       <?php else: ?>
-        <a href="login.php">Iniciar Sesión</a>
+        <a href="login.php">INICIAR SESIÓN</a>
       <?php endif; ?>
     </nav>
   </header>
@@ -35,17 +36,11 @@ session_start();
     <section class="hero-content">
       <h1>RED DRAGON´S | WHITING</h1>
       <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
-      <p class="subtitle">Torneo para verdaderas leyendas.</p>
+      <p class="subtitle">ANTICHEATS | SERVIDOR PRIVADO | ORGANIZA TU TORNEO.</p>
       <div class="hero-buttons">
         <a href="#equipos" class="btn primary">Mas Informacion</a>
         <button type="button" class="btn secondary" id="open-rules">Ver reglas</button>
       </div>
-      <div class="info-tags">
-        <span>Premio: $50</span>
-        <span>Modo: 4v4</span>
-        <span>Plataforma: PC</span>
-      </div>
-    </section>
   </main>
 
   <section class="rules-modal" id="rules-modal" aria-hidden="true" role="dialog" aria-label="Reglas del torneo">
