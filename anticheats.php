@@ -43,27 +43,67 @@ session_start();
   <section class="section" id="cta-anticheat">
     <div class="plan-actions">
       <?php if (isset($_SESSION['usuario'])): ?>
-        <a href="generar_claves.php" class="btn primary plan-btn glow-on-hover plan-actions__btn">Generar Claves</a>
-        <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="cta-download plan-actions__btn">
-          <span>Descargar Anticheat</span>
-          <svg fill="none" viewBox="0 0 24 24" class="cta-download__arrow" aria-hidden="true">
-            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" d="M5 12h14M13 6l6 6-6 6"></path>
-          </svg>
-        </a>
+        <div class="btn-wrapper plan-actions__btn">
+          <a href="generar_claves.php" class="btn">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">G</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">e</span><span class="btn-letter">r</span><span class="btn-letter">a</span><span class="btn-letter">r</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">G</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">e</span><span class="btn-letter">r</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="btn-wrapper plan-actions__btn">
+          <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="btn">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">D</span><span class="btn-letter">e</span><span class="btn-letter">s</span><span class="btn-letter">c</span><span class="btn-letter">a</span><span class="btn-letter">r</span><span class="btn-letter">g</span><span class="btn-letter">a</span><span class="btn-letter">r</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">D</span><span class="btn-letter">e</span><span class="btn-letter">s</span><span class="btn-letter">c</span><span class="btn-letter">a</span><span class="btn-letter">r</span><span class="btn-letter">g</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+              </div>
+            </div>
+          </a>
+        </div>
       <?php else: ?>
-        <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="cta-download plan-actions__btn">
-          <span>Descargar Anticheat</span>
-          <svg fill="none" viewBox="0 0 24 24" class="cta-download__arrow" aria-hidden="true">
-            <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" d="M5 12h14M13 6l6 6-6 6"></path>
-          </svg>
-        </a>
-        <a href="registro.php" class="cta-glow plan-actions__btn">
-          <div class="cta-glow__display">
-            <div class="cta-glow__text">Adquirir Plan</div>
-          </div>
-          <span></span>
-          <span></span>
-        </a>
+        <div class="btn-wrapper plan-actions__btn">
+          <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="btn">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">D</span><span class="btn-letter">e</span><span class="btn-letter">s</span><span class="btn-letter">c</span><span class="btn-letter">a</span><span class="btn-letter">r</span><span class="btn-letter">g</span><span class="btn-letter">a</span><span class="btn-letter">r</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">D</span><span class="btn-letter">e</span><span class="btn-letter">s</span><span class="btn-letter">c</span><span class="btn-letter">a</span><span class="btn-letter">r</span><span class="btn-letter">g</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="btn-wrapper plan-actions__btn">
+          <a href="registro.php" class="btn">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">A</span><span class="btn-letter">d</span><span class="btn-letter">q</span><span class="btn-letter">u</span><span class="btn-letter">i</span><span class="btn-letter">r</span><span class="btn-letter">i</span><span class="btn-letter">r</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">A</span><span class="btn-letter">d</span><span class="btn-letter">q</span><span class="btn-letter">u</span><span class="btn-letter">i</span><span class="btn-letter">r</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+              </div>
+            </div>
+          </a>
+        </div>
       <?php endif; ?>
     </div>
     <?php if (!isset($_SESSION['usuario'])): ?>
@@ -79,10 +119,6 @@ session_start();
       <div class="feature-card">
         <h3>🛡️ Protección en Tiempo Real</h3>
         <p>Detección instantánea de cheats y hacks durante las partidas.</p>
-      </div>
-      <div class="feature-card">
-        <h3>🔍 Análisis Avanzado</h3>
-        <p>Algoritmos de última generación para identificar comportamientos sospechosos.</p>
       </div>
       <div class="feature-card">
         <h3>⚡ Rendimiento Optimizado</h3>
@@ -105,7 +141,7 @@ session_start();
           <h3>🏆 Plan Premium</h3>
           <p class="plan-card-modern__price">
             <span class="currency">S/</span>
-            <span class="amount">30</span>
+            <span class="amount">40</span>
             <span class="period">/mes</span>
           </p>
           <p class="plan-card-modern__subtitle">La mejor defensa contra cheats para equipos competitivos.</p>
@@ -130,7 +166,7 @@ session_start();
             </li>
           <?php endforeach; ?>
         </ul>
-        <a href="registro.php" class="plan-card-modern__cta">Adquirir Plan</a>
+        <a href="registro.php" class="Btn" style="margin-top: 1.4rem;"></a>
       </article>
     </div>
   </section>
@@ -146,7 +182,7 @@ session_start();
       <div class="step">
         <div class="step-number">2</div>
         <h3>Pago</h3>
-        <p>Adquiere el plan premium por S/ 30</p>
+        <p>Adquiere el plan premium por S/ 40</p>
       </div>
       <div class="step">
         <div class="step-number">3</div>

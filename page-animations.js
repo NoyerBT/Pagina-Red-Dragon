@@ -180,9 +180,10 @@ function createParticles() {
 
 // Añadir efecto de brillo a elementos específicos
 function addGlowEffects() {
-  const glowElements = document.querySelectorAll('.btn, .nav-links a');
-  glowElements.forEach(function(element) {
-    element.classList.add('glow-on-hover');
+  // Brillo rojo para botones
+  const buttons = document.querySelectorAll('.btn');
+  buttons.forEach(function(btn) {
+    btn.classList.add('glow-on-hover-red');
   });
 }
 
