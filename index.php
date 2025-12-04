@@ -43,10 +43,10 @@ session_start();
 
 
   <section class="section about-section" id="equipos">
-    <h2>SOBRE NUESTRA PAGINA</h2>
+    <h2>SOBRE NUESTRA PÁGINA / ABOUT OUR PAGE</h2>
     <div class="about-wrapper">
       <article class="about-item">
-        <h3>¿QUÉ ES RDC?</h3>
+        <h3>¿QUÉ ES RDC? / WHAT IS RDC?</h3>
         <p>
           Esta página es una plataforma de la Red Dragon Cup, torneo del videojuego Left 4 Dead 2 diseñado para la comunidad y los jugadores que buscan una experiencia seria, organizada y con un ambiente de alto nivel. Nuestra página reúne toda la información oficial del torneo, desde reglas y clasificación hasta anuncios importantes y contenido exclusivo del torneo.
         </p>
@@ -56,7 +56,7 @@ session_start();
       </article>
 
       <article class="about-item">
-        <h3>NUESTRA MISIÓN</h3>
+        <h3>NUESTRA MISIÓN / OUR MISSION</h3>
         <p>
           Queremos ofrecer un torneo transparente, justo y emocionante, donde cada equipo tenga la oportunidad de demostrar su habilidad y competir en igualdad de condiciones. RDC nace con el objetivo de fortalecer la escena competitiva y brindar un espacio donde la comunidad pueda crecer, participar y disfrutar.
         </p>
@@ -66,7 +66,7 @@ session_start();
       </article>
 
       <article class="about-item">
-        <h3>¿QUÉ OFRECEMOS?</h3>
+        <h3>¿QUÉ OFRECEMOS? / WHAT DO WE OFFER?</h3>
         <ul class="about-list">
           <li>
             Torneos organizados profesionalmente con formatos claros, grupos o eliminación directa.
@@ -92,7 +92,7 @@ session_start();
       </article>
 
       <article class="about-item">
-        <h3>COMUNIDAD Y TRANSPARENCIA</h3>
+        <h3>COMUNIDAD Y TRANSPARENCIA / COMMUNITY & TRANSPARENCY</h3>
         <p>
           Creemos en la comunicación abierta con los participantes, por eso nuestro portal está diseñado para que cualquier jugador o equipo pueda acceder de forma rápida a la información más relevante. Cada cambio, actualización o anuncio se publicará directamente aquí.
         </p>
@@ -102,7 +102,7 @@ session_start();
       </article>
 
       <article class="about-item">
-        <h3>ÚNETE A LA EXPERIENCIA</h3>
+        <h3>ÚNETE A LA EXPERIENCIA / JOIN THE EXPERIENCE</h3>
         <p>
           Si eres competitivo, si disfrutas de los desafíos y si buscas un torneo donde tu habilidad realmente importe, entonces estás en el lugar correcto. RDC no es solo un torneo: es una arena para leyendas.
         </p>

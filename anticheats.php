@@ -175,21 +175,41 @@ session_start();
     <h2>¿Cómo Funciona?</h2>
     <div class="steps-container">
       <div class="step">
+        <div class="mac-header">
+          <span class="red"></span>
+          <span class="yellow"></span>
+          <span class="green"></span>
+        </div>
         <div class="step-number">1</div>
         <h3>Registro</h3>
         <p>Crea tu cuenta en nuestra plataforma</p>
       </div>
       <div class="step">
+        <div class="mac-header">
+          <span class="red"></span>
+          <span class="yellow"></span>
+          <span class="green"></span>
+        </div>
         <div class="step-number">2</div>
         <h3>Pago</h3>
         <p>Adquiere el plan premium por S/ 40</p>
       </div>
       <div class="step">
+        <div class="mac-header">
+          <span class="red"></span>
+          <span class="yellow"></span>
+          <span class="green"></span>
+        </div>
         <div class="step-number">3</div>
         <h3>Instalación</h3>
         <p>Descarga e instala nuestro cliente</p>
       </div>
       <div class="step">
+        <div class="mac-header">
+          <span class="red"></span>
+          <span class="yellow"></span>
+          <span class="green"></span>
+        </div>
         <div class="step-number">4</div>
         <h3>¡Juega!</h3>
         <p>Disfruta de partidas limpias y competitivas</p>

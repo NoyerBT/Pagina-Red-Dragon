@@ -41,66 +41,108 @@ session_start();
   </main>
 
   <section class="section" id="contacto-info">
-    <h2>Información de Contacto</h2>
+    <h2>Nuestro Equipo</h2>
     
-    <div class="contact-grid">
-      <div class="contact-card">
-        <h3>💬 Discord</h3>
-        <p>Únete a nuestro servidor oficial</p>
-        <a href="https://discord.gg/k2xmHEST" class="contact-link" target="_blank" rel="noopener noreferrer">https://discord.gg/k2xmHEST</a>
+    <div class="team-grid">
+      <!-- Administrador Card (Cúspide) -->
+      <div class="team-card main-card">
+        <div class="team-card__header">
+          <div class="team-card__photo">
+            <img src="Img/fotoadministrador.jpg" alt="Administrador" style="object-position: 60% center;" />
+          </div>
+          <div class="team-card__badge admin">ADMINISTRADOR</div>
+        </div>
+        <div class="team-card__body">
+          <h3>WHITING</h3>
+          <p class="team-card__role">Fundador & Administrador Principal</p>
+          <div class="team-card__contacts">
+            <a href="tel:+51959214173" class="team-contact-item">
+              <span class="contact-icon">📱</span>
+              <span>+51 959214173</span>
+            </a>
+             <a href="https://guns.lol/whiting" class="team-contact-item">
+              <span class="contact-icon">🔗</span>
+              <span>https://guns.lol/whiting</span>
+            </a>
+          </div>
+        </div>
       </div>
-      
-      <div class="contact-card">
-        <h3>📧 Email</h3>
-        <p>Soporte técnico y consultas</p>
-        <a href="mailto:info@reddragons.com" class="contact-link">info@reddragons.com</a>
+
+      <!-- Soporte Card (Base Izquierda) -->
+      <div class="team-card">
+        <div class="team-card__header">
+          <div class="team-card__photo">
+            <img src="Img/fotosoporte.jpg" alt="Soporte" />
+          </div>
+          <div class="team-card__badge support">SOPORTE</div>
+        </div>
+        <div class="team-card__body">
+          <h3>NH</h3>
+          <p class="team-card__role">Soporte Técnico</p>
+          <div class="team-card__contacts">
+            <a href="https://guns.lol/neelsonh" class="team-contact-item" target="_blank" rel="noopener noreferrer">
+              <span class="contact-icon">🔗</span>
+              <span>guns.lol/neelsonh</span>
+            </a>
+            <div class="team-contact-item">
+              <span class="contact-icon">DISC 💬</span>
+              <span>hq27_27364</span>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <div class="contact-card">
-        <h3>📱 WhatsApp</h3>
-        <p>Atención directa</p>
-        <a href="#" class="contact-link">+51 XXX XXX XXX</a>
-      </div>
-      
-      <div class="contact-card">
-        <h3>🐦 Twitter</h3>
-        <p>Síguenos para noticias</p>
-        <a href="#" class="contact-link">@RedDragonsCup</a>
+
+      <!-- Diseñadora Card (Base Derecha) -->
+      <div class="team-card">
+        <div class="team-card__header">
+          <div class="team-card__photo">
+            <img src="Img/fotodiseñadora.jpg" alt="Diseñadora" />
+          </div>
+          <div class="team-card__badge designer">DISEÑADORA</div>
+        </div>
+        <div class="team-card__body">
+          <h3>Vallolet</h3>
+          <p class="team-card__role">Diseño Grafico M&N Studio</p>
+          <div class="team-card__contacts">
+            <a href="mailto:iamvallolet07@gmail.com" class="team-contact-item">
+              <span class="contact-icon">📧</span>
+              <span>iamvallolet07@gmail.com</span>
+            </a>
+            <div class="team-contact-item">
+              <span class="contact-icon"> DISC 💬</span>
+              <span>you_vallolet</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="section" id="formulario-contacto">
     <h2>Envíanos un Mensaje</h2>
-    <form class="contact-form" action="#" method="POST">
-      <div class="form-group">
-        <label for="nombre">Nombre Completo</label>
-        <input type="text" id="nombre" name="nombre" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <input type="email" id="email" name="email" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="asunto">Asunto</label>
-        <select id="asunto" name="asunto" required>
-          <option value="">Selecciona un tema</option>
-          <option value="torneo">Consulta sobre el torneo</option>
-          <option value="anticheat">Soporte anticheat</option>
-          <option value="tecnico">Problema técnico</option>
-          <option value="otro">Otro</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="mensaje">Mensaje</label>
-        <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
-      </div>
-      
-      <button type="submit" class="btn primary">Enviar Mensaje</button>
-    </form>
+    <div class="neumorphic-container">
+      <form class="neumorphic-form" action="#" method="POST">
+        <div class="form-content">
+          <div class="form-details">Contacto</div>
+          
+          <input placeholder="Nombre de Usuario" class="neumorphic-input" type="text" name="nombre" required>
+          
+          <input placeholder="Correo Electrónico" class="neumorphic-input" type="email" name="email" required>
+          
+          <select class="neumorphic-input" name="asunto" required>
+            <option value="">Selecciona un tema</option>
+            <option value="torneo">Consulta sobre el torneo</option>
+            <option value="anticheat">Soporte anticheat</option>
+            <option value="tecnico">Problema técnico</option>
+            <option value="otro">Otro</option>
+          </select>
+          
+          <textarea placeholder="Escribe tu mensaje aquí..." class="neumorphic-input" name="mensaje" rows="5" required></textarea>
+          
+          <button class="neumorphic-btn">Enviar Mensaje</button>
+        </div>
+      </form>
+    </div>
   </section>
 
   <section class="section" id="horarios">
@@ -114,7 +156,7 @@ session_start();
   </section>
 
   <footer class="footer">
-    <p>&copy; <span id="year"></span> Red Dragons Championship. Todos los derechos reservados.</p>
+    <p>&copy; <span id="year"></span> 2025 Red Dragons Corporation. Todos los derechos reservados.</p>
   </footer>
 
   <script src="scripts.js"></script>
