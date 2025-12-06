@@ -56,6 +56,7 @@ if (isset($conn)) {
       <?php endif; ?>
       <a href="anticheats.php">ANTICHEATS RDC</a>
       <a href="contacto.php">CONTACTO</a>
+      <a href="salon_fama.php">SALÓN DE LA FAMA</a>
       <?php if ($userHasAccount): ?>
         <a href="dashboard.php">MI CUENTA</a>
         <a href="logout.php">CERRAR SESIÓN</a>
@@ -67,9 +68,7 @@ if (isset($conn)) {
 
   <main class="hero hero--organizador">
     <section class="hero-content">
-      <p class="hero-eyebrow">Suite táctica RDC</p>
       <h1>Organiza tu torneo</h1>
-      <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
       <?php if ($userHasAccount && $plan_activo): ?>
         <p class="subtitle">Genera brackets, matches y lleva el control de tus llaves en minutos. <span class="text-success">Plan Anticheat activo<?php if ($dias_restantes !== null) { echo ' • ' . $dias_restantes . ' días restantes'; } ?></span></p>
       <?php elseif ($userHasAccount): ?>
@@ -78,23 +77,107 @@ if (isset($conn)) {
         <p class="subtitle">Esta herramienta está disponible únicamente para usuarios registrados con un plan Anticheat vigente.</p>
       <?php endif; ?>
 
-      <div class="hero-buttons">
+      <div class="hero-buttons plan-actions">
         <?php if (!$userHasAccount): ?>
-          <a href="registro.php" class="btn primary">Crear cuenta</a>
-          <a href="login.php" class="btn secondary">Iniciar sesión</a>
+          <div class="btn-wrapper plan-actions__btn">
+            <a href="registro.php" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">C</span><span class="btn-letter">r</span><span class="btn-letter">e</span><span class="btn-letter">a</span><span class="btn-letter">r</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">C</span><span class="btn-letter">r</span><span class="btn-letter">e</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="btn-wrapper plan-actions__btn">
+            <a href="login.php" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">I</span><span class="btn-letter">n</span><span class="btn-letter">i</span><span class="btn-letter">c</span><span class="btn-letter">i</span><span class="btn-letter">a</span><span class="btn-letter">r</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">I</span><span class="btn-letter">n</span><span class="btn-letter">i</span><span class="btn-letter">c</span><span class="btn-letter">i</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
         <?php elseif (!$plan_activo): ?>
-          <a href="anticheats.php" class="btn primary">Ver plan Anticheat</a>
-          <a href="dashboard.php" class="btn secondary">Ir a mi cuenta</a>
+          <div class="btn-wrapper plan-actions__btn">
+            <a href="anticheats.php" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">V</span><span class="btn-letter">e</span><span class="btn-letter">r</span><span class="btn-letter">P</span><span class="btn-letter">l</span><span class="btn-letter">a</span><span class="btn-letter">n</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">V</span><span class="btn-letter">i</span><span class="btn-letter">s</span><span class="btn-letter">u</span><span class="btn-letter">a</span><span class="btn-letter">l</span><span class="btn-letter">i</span><span class="btn-letter">z</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="btn-wrapper plan-actions__btn">
+            <a href="dashboard.php" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">M</span><span class="btn-letter">i</span><span class="btn-letter">C</span><span class="btn-letter">u</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">t</span><span class="btn-letter">a</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">A</span><span class="btn-letter">c</span><span class="btn-letter">c</span><span class="btn-letter">e</span><span class="btn-letter">d</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
         <?php else: ?>
-          <a href="#organizador" class="btn primary">Ir al organizador</a>
-          <a href="dashboard.php" class="btn secondary">Dashboard</a>
+          <div class="btn-wrapper plan-actions__btn">
+            <a href="#organizador" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">O</span><span class="btn-letter">r</span><span class="btn-letter">g</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">i</span><span class="btn-letter">z</span><span class="btn-letter">a</span><span class="btn-letter">d</span><span class="btn-letter">o</span><span class="btn-letter">r</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">A</span><span class="btn-letter">c</span><span class="btn-letter">c</span><span class="btn-letter">e</span><span class="btn-letter">d</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="btn-wrapper plan-actions__btn">
+            <a href="dashboard.php" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">D</span><span class="btn-letter">a</span><span class="btn-letter">s</span><span class="btn-letter">h</span><span class="btn-letter">b</span><span class="btn-letter">o</span><span class="btn-letter">a</span><span class="btn-letter">r</span><span class="btn-letter">d</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">A</span><span class="btn-letter">c</span><span class="btn-letter">c</span><span class="btn-letter">e</span><span class="btn-letter">d</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
         <?php endif; ?>
       </div>
 
       <div class="info-tags">
-        <span>Matches instantáneos</span>
-        <span>Brackets personalizables</span>
-        <span>Exportación rápida</span>
+        <span>Integracion de equipos</span>
+        <span>Brackets personalizables o aleatorios</span>
+        <span>Servidor privado</span>
       </div>
     </section>
   </main>
@@ -104,8 +187,8 @@ if (isset($conn)) {
     <div class="organizer-steps-grid">
       <article class="organizer-card">
         <span class="organizer-card__icon">🧩</span>
-        <h3>Diseña tus llaves</h3>
-        <p>Agrega equipos, define seeds y crea llaves con un solo clic, ideal para scrims o copas relámpago.</p>
+        <h3>Libertad</h3>
+        <p>Agrega y elimina equipos, define matchs y usa tu servidor como y cuando quieras.</p>
       </article>
       <article class="organizer-card">
         <span class="organizer-card__icon">🎮</span>
@@ -113,14 +196,9 @@ if (isset($conn)) {
         <p>Registra puntajes, marca ganadores y reinicia partidas sin necesidad de hojas externas.</p>
       </article>
       <article class="organizer-card">
-        <span class="organizer-card__icon">🚀</span>
-        <h3>Exporta en segundos</h3>
-        <p>Copia la planificación completa para compartirla con tu staff o integrarla en otras plataformas.</p>
-      </article>
-      <article class="organizer-card">
         <span class="organizer-card__icon">🛡️</span>
-        <h3>Soporte del plan Anticheat</h3>
-        <p>El organizador se habilita junto a tu suscripción activa, asegurando juegos limpios y herramientas exclusivas.</p>
+        <h3>Anticheat</h3>
+        <p>El organizador con suscripción activa, puede generar tokens de revision y contar con las actualizaciones del anticheats.</p>
       </article>
     </div>
   </section>
@@ -183,16 +261,55 @@ if (isset($conn)) {
         <div id="organizer-toast" class="organizer-toast" role="status" aria-live="polite"></div>
       <?php else: ?>
         <div class="organizer-locked">
-          <p>Necesitas un plan Anticheat activo para habilitar el módulo de organización.</p>
-          <a href="anticheats.php" class="btn primary">Ver planes disponibles</a>
+          <div class="organizer-locked__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3 class="organizer-locked__title">Módulo bloqueado</h3>
+          <p class="organizer-locked__message">Necesitas un plan Anticheat activo para habilitar el módulo de organización y acceder a todas las herramientas exclusivas.</p>
+          <div class="organizer-locked__benefits">
+            <div class="organizer-locked__benefit">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" />
+              </svg>
+              <span>Generador de brackets personalizados</span>
+            </div>
+            <div class="organizer-locked__benefit">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" />
+              </svg>
+              <span>Gestión completa de matches y puntajes</span>
+            </div>
+            <div class="organizer-locked__benefit">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" />
+              </svg>
+              <span>Acceso a servidor privado</span>
+            </div>
+          </div>
+          <div class="organizer-locked__action">
+            <div class="btn-wrapper plan-actions__btn">
+              <a href="anticheats.php" class="btn">
+                <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+                </svg>
+                <div class="txt-wrapper">
+                  <div class="txt-1">
+                    <span class="btn-letter">V</span><span class="btn-letter">e</span><span class="btn-letter">r</span><span class="btn-letter">P</span><span class="btn-letter">l</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">e</span><span class="btn-letter">s</span>
+                  </div>
+                  <div class="txt-2">
+                    <span class="btn-letter">V</span><span class="btn-letter">i</span><span class="btn-letter">s</span><span class="btn-letter">u</span><span class="btn-letter">a</span><span class="btn-letter">l</span><span class="btn-letter">i</span><span class="btn-letter">z</span><span class="btn-letter">a</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
       <?php endif; ?>
     </section>
   <?php endif; ?>
-
-  <footer class="footer">
-    <p>&copy; <span id="year"></span> Red Dragons Championship. Todos los derechos reservados.</p>
-  </footer>
 
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>

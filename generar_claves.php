@@ -18,7 +18,7 @@ function load_tokens($file) {
     } 
     return [];
 }
-
+si
 // Función para guardar tokens en el archivo JSON
 function save_tokens($file, $tokens) {
     $json_data = json_encode($tokens, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -80,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <a href="torneo.php">TORNEO</a>
       <a href="anticheats.php">ANTICHEATS RDC</a>
       <a href="contacto.php">CONTACTO</a>
+      <a href="salon_fama.php">SALÓN DE LA FAMA</a>
       <a href="dashboard.php">MI CUENTA</a>
       <a href="logout.php">CERRAR SESIÓN</a>
     </nav>
@@ -116,10 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </section>
-
-  <footer class="footer">
-    <p>&copy; <span id="year"></span> Red Dragons Championship. Todos los derechos reservados.</p>
-  </footer>
 
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>

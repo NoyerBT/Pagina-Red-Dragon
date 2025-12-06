@@ -23,6 +23,7 @@ session_start();
       <?php endif; ?>
       <a href="anticheats.php">ANTICHEATS RDC</a>
       <a href="contacto.php">CONTACTO</a>
+      <a href="salon_fama.php">SALÓN DE LA FAMA</a>
       <?php if (isset($_SESSION['usuario'])): ?>
         <a href="dashboard.php">MI CUENTA</a>
         <a href="logout.php">CERRAR SESIÓN</a>

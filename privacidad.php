@@ -22,6 +22,7 @@ session_start();
       <?php endif; ?>
       <a href="anticheats.php">ANTICHEATS RDC</a>
       <a href="contacto.php">CONTACTO</a>
+      <a href="salon_fama.php">SALÓN DE LA FAMA</a>
       <?php if (isset($_SESSION['usuario'])): ?>
         <a href="dashboard.php">MI CUENTA</a>
         <a href="logout.php">CERRAR SESIÓN</a>
@@ -70,10 +71,6 @@ session_start();
       <p>Podemos modificar esta política para reflejar mejoras en la seguridad o cambios legales. Notificaremos cualquier actualización relevante dentro del portal.</p>
     </article>
   </main>
-
-  <footer class="footer">
-    <p>&copy; <span id="year"></span> Red Dragons Championship. Todos los derechos reservados.</p>
-  </footer>
 
   <script src="scripts.js"></script>
 </body>

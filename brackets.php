@@ -88,6 +88,7 @@ function renderMatch($match) {
       <?php endif; ?>
       <a href="anticheats.php">ANTICHEATS RDC</a>
       <a href="contacto.php">CONTACTO</a>
+      <a href="salon_fama.php">SALÓN DE LA FAMA</a>
       <?php if (isset($_SESSION['usuario'])): ?>
         <a href="dashboard.php">MI CUENTA</a>
         <a href="logout.php">CERRAR SESIÓN</a>
@@ -204,10 +205,6 @@ function renderMatch($match) {
       <a href="torneo.php" class="btn-back">← Volver al Torneo</a>
     </div>
   </main>
-
-  <footer class="footer">
-    <p>&copy; <span id="year"></span> Red Dragons Championship. Todos los derechos reservados.</p>
-  </footer>
 
   <script src="scripts.js"></script>
 </body>

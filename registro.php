@@ -21,6 +21,7 @@ session_start();
       <a href="index.php">INICIO</a>
       <a href="anticheats.php">ANTICHEATS RDC</a>
       <a href="contacto.php">CONTACTO</a>
+      <a href="salon_fama.php">SALÓN DE LA FAMA</a>
       <a href="login.php">INICIAR SESIÓN</a>
     </nav>
   </header>
@@ -162,10 +163,6 @@ session_start();
       </div>
     </div>
   </section>
-
-  <footer class="footer">
-    <p>&copy; <span id="year"></span> Red Dragons Championship. Todos los derechos reservados.</p>
-  </footer>
 
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>

@@ -22,7 +22,8 @@ session_start();
         <a href="torneo.php">TORNEO</a>
       <?php endif; ?>
       <a href="anticheats.php">ANTICHEATS RDC</a>
-      <a href="contacto.php">CONTACTO</a>
+      <a href="contacto.php" class="active">CONTACTO</a>
+      <a href="salon_fama.php">SALÓN DE LA FAMA</a>
       <?php if (isset($_SESSION['usuario'])): ?>
         <a href="dashboard.php">MI CUENTA</a>
         <a href="logout.php">CERRAR SESIÓN</a>
@@ -35,7 +36,6 @@ session_start();
   <main class="hero">
     <section class="hero-content">
       <h1>Contacto</h1>
-      <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
       <p class="subtitle">¿Tienes dudas? Contáctanos por cualquiera de estos medios.</p>
     </section>
   </main>
@@ -56,7 +56,7 @@ session_start();
           <h3>WHITING</h3>
           <p class="team-card__role">Fundador & Administrador Principal</p>
           <div class="team-card__contacts">
-            <a href="tel:+51959214173" class="team-contact-item">
+            <a href="https://wa.me/51959214173" class="team-contact-item" target="_blank" rel="noopener noreferrer">
               <span class="contact-icon">📱</span>
               <span>+51 959214173</span>
             </a>
@@ -121,17 +121,24 @@ session_start();
   <section class="section" id="formulario-contacto">
     <h2>Envíanos un Mensaje</h2>
     <div class="neumorphic-container">
-      <form class="neumorphic-form" action="#" method="POST">
+      <?php
+      if (isset($_SESSION['contacto_error'])) {
+          echo '<p class="error-message" style="margin-bottom: 20px; padding: 15px; background-color: #ff4444; color: white; border-radius: 5px; text-align: center;">' . $_SESSION['contacto_error'] . '</p>';
+          unset($_SESSION['contacto_error']);
+      }
+      if (isset($_SESSION['contacto_exito'])) {
+          echo '<p class="success-message" style="margin-bottom: 20px; padding: 15px; background-color: #44ff44; color: white; border-radius: 5px; text-align: center;">' . $_SESSION['contacto_exito'] . '</p>';
+          unset($_SESSION['contacto_exito']);
+      }
+      ?>
+      <form class="neumorphic-form" action="procesar_contacto.php" method="POST">
         <div class="form-content">
           <div class="form-details">Contacto</div>
           
           <input placeholder="Nombre de Usuario" class="neumorphic-input" type="text" name="nombre" required>
           
-          <input placeholder="Correo Electrónico" class="neumorphic-input" type="email" name="email" required>
-          
           <select class="neumorphic-input" name="asunto" required>
             <option value="">Selecciona un tema</option>
-            <option value="torneo">Consulta sobre el torneo</option>
             <option value="anticheat">Soporte anticheat</option>
             <option value="tecnico">Problema técnico</option>
             <option value="otro">Otro</option>
@@ -155,9 +162,73 @@ session_start();
     </div>
   </section>
 
-  <footer class="footer">
-    <p>&copy; <span id="year"></span> 2025 Red Dragons Corporation. Todos los derechos reservados.</p>
-  </footer>
+  <!-- Modal para usuarios no logueados -->
+  <div id="modalLogin" class="contact-modal">
+    <div class="contact-modal__backdrop"></div>
+    <div class="contact-modal__dialog">
+      <button class="contact-modal__close" onclick="cerrarModalLogin()">&times;</button>
+      <div class="contact-modal__content">
+        <h3>⚠️ Inicio de Sesión Requerido</h3>
+        <p>Debes iniciar sesión para enviar un mensaje.</p>
+        <div class="contact-modal__actions">
+          <a href="login.php" class="btn-primary-modal">Iniciar Sesión</a>
+          <button onclick="cerrarModalLogin()" class="btn-secondary-modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Variable para saber si el usuario está logueado
+    const usuarioLogueado = <?php echo isset($_SESSION['usuario']) ? 'true' : 'false'; ?>;
+    
+    // Interceptar el envío del formulario
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('.neumorphic-form');
+      
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          if (!usuarioLogueado) {
+            e.preventDefault(); // Prevenir el envío
+            mostrarModalLogin(); // Mostrar el modal
+            return false;
+          }
+          // Si está logueado, permitir el envío normal
+        });
+      }
+    });
+    
+    function mostrarModalLogin() {
+      const modal = document.getElementById('modalLogin');
+      if (modal) {
+        modal.classList.add('is-visible');
+        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+      }
+    }
+    
+    function cerrarModalLogin() {
+      const modal = document.getElementById('modalLogin');
+      if (modal) {
+        modal.classList.remove('is-visible');
+        document.body.style.overflow = ''; // Restaurar scroll del body
+      }
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('modalLogin');
+      if (modal && e.target === modal.querySelector('.contact-modal__backdrop')) {
+        cerrarModalLogin();
+      }
+    });
+    
+    // Cerrar modal con la tecla ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        cerrarModalLogin();
+      }
+    });
+  </script>
 
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>
