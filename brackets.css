@@ -1,21 +1,38 @@
 /* Brackets Main Container */
 .brackets-main {
-  padding: 2rem 1rem;
+  padding: 1rem 1rem 2rem 1rem;
+  padding-top: 0;
   min-height: 80vh;
   overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .brackets-header {
   text-align: center;
   margin-bottom: 2rem;
-  padding: 1.5rem 1rem;
+  margin-top: 2rem;
+  padding: 2rem 1rem 1.5rem 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .brackets-header h1 {
   font-size: 2.5rem;
   color: #d4af37;
   text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  margin-top: 0;
   margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
+  line-height: 1.3;
 }
 
 .brackets-subtitle {
@@ -27,7 +44,7 @@
 /* Tournament Container */
 .tournament-container {
   background: rgba(20, 20, 20, 0.9);
-  border: 2px solid #d4af37;
+  border: none;
   border-radius: 15px;
   padding: 2rem;
   overflow-x: auto;
@@ -45,9 +62,9 @@
   text-align: center;
   margin-bottom: 1.5rem;
   padding: 0.8rem;
-  background: rgba(212, 175, 55, 0.1);
-  border-radius: 8px;
-  border: 2px solid #d4af37;
+  background: transparent;
+  border-radius: 0;
+  border: none;
   letter-spacing: 2px;
 }
 
@@ -62,14 +79,14 @@
 
 .losers-title {
   color: #e74c3c;
-  border-color: #e74c3c;
-  background: rgba(231, 76, 60, 0.1);
+  border: none;
+  background: transparent;
 }
 
 .grand-final-title {
   color: #f39c12;
-  border-color: #f39c12;
-  background: rgba(243, 156, 18, 0.1);
+  border: none;
+  background: transparent;
   font-size: 2rem;
 }
 

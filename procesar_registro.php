@@ -48,8 +48,8 @@ try {
         throw new Exception("El nombre de usuario o correo electrónico ya existe.");
     }
 
-    // Insert user into database with 'bloqueado' state
-    $sql = "INSERT INTO usuarios (nombre, email, usuario, password, estado) VALUES (?, ?, ?, ?, 'bloqueado')";
+    // Insert user into database with 'activo' state (auto-activated)
+    $sql = "INSERT INTO usuarios (nombre, email, usuario, password, estado) VALUES (?, ?, ?, ?, 'activo')";
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         throw new Exception("Error al preparar la consulta: " . $conn->error);

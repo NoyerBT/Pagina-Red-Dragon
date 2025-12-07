@@ -106,9 +106,9 @@ session_start();
     }
 
     .steam-icon {
-        width: 20px;
-        height: 20px;
-        fill: currentColor;
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
     }
 
     /* Estilos para el banner de invitación a colaborar */
@@ -318,7 +318,7 @@ session_start();
   <main class="hero">
     <section class="hero-content">
       <h1>SALÓN DE LA FAMA</h1>
-      <p class="subtitle">Reconociendo a quienes hacen posible la Red Dragons Cup</p>
+      <p class="subtitle">Reconociendo a quienes apoyan la pagina</p>
     </section>
   </main>
 
@@ -333,9 +333,7 @@ session_start();
         </div>
         <h3 class="fame-name">WHITING</h3>
         <a href="https://steamcommunity.com/id/Whiting21/" target="_blank" rel="noopener noreferrer" class="steam-btn">
-            <svg class="steam-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.979 0C5.668 0 .514 4.937.045 11.17L4.17 15.3c.634-.363 1.37-.534 2.12-.494l3.644-5.314c-.135-.645-.01-1.332.37-1.905.68-1.022 2.07-1.297 3.092-.617 1.022.68 1.297 2.07.617 3.092-.513.77-1.436 1.11-2.265.96l-3.65 5.324c.53.98.583 2.148.128 3.173l4.357 1.796c.49-.263 1.046-.38 1.604-.32 2.23.24 3.845 2.255 3.605 4.485-.24 2.23-2.255 3.845-4.485 3.605-2.23-.24-3.845-2.255-3.605-4.485.092-.85.43-1.628.946-2.26l-4.32-1.78c-1.017.66-2.302.74-3.39.18l-3.27 3.27C3.46 22.28 7.43 24 11.978 24c6.627 0 12-5.373 12-12S18.605 0 11.98 0z"/>
-            </svg>
+            <img src="Img/logo steam.png" alt="Steam" class="steam-icon" />
             Perfil de Steam
         </a>
       </div>
@@ -347,9 +345,7 @@ session_start();
         </div>
         <h3 class="fame-name">NH</h3>
         <a href="https://steamcommunity.com/profiles/76561199176974317" target="_blank" rel="noopener noreferrer" class="steam-btn">
-            <svg class="steam-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.979 0C5.668 0 .514 4.937.045 11.17L4.17 15.3c.634-.363 1.37-.534 2.12-.494l3.644-5.314c-.135-.645-.01-1.332.37-1.905.68-1.022 2.07-1.297 3.092-.617 1.022.68 1.297 2.07.617 3.092-.513.77-1.436 1.11-2.265.96l-3.65 5.324c.53.98.583 2.148.128 3.173l4.357 1.796c.49-.263 1.046-.38 1.604-.32 2.23.24 3.845 2.255 3.605 4.485-.24 2.23-2.255 3.845-4.485 3.605-2.23-.24-3.845-2.255-3.605-4.485.092-.85.43-1.628.946-2.26l-4.32-1.78c-1.017.66-2.302.74-3.39.18l-3.27 3.27C3.46 22.28 7.43 24 11.978 24c6.627 0 12-5.373 12-12S18.605 0 11.98 0z"/>
-            </svg>
+            <img src="Img/logo steam.png" alt="Steam" class="steam-icon" />
             Perfil de Steam
         </a>
       </div>
@@ -361,9 +357,7 @@ session_start();
         </div>
         <h3 class="fame-name">Vallolet</h3>
         <a href="https://steamcommunity.com/profiles/76561199638892858" target="_blank" rel="noopener noreferrer" class="steam-btn">
-            <svg class="steam-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.979 0C5.668 0 .514 4.937.045 11.17L4.17 15.3c.634-.363 1.37-.534 2.12-.494l3.644-5.314c-.135-.645-.01-1.332.37-1.905.68-1.022 2.07-1.297 3.092-.617 1.022.68 1.297 2.07.617 3.092-.513.77-1.436 1.11-2.265.96l-3.65 5.324c.53.98.583 2.148.128 3.173l4.357 1.796c.49-.263 1.046-.38 1.604-.32 2.23.24 3.845 2.255 3.605 4.485-.24 2.23-2.255 3.845-4.485 3.605-2.23-.24-3.845-2.255-3.605-4.485.092-.85.43-1.628.946-2.26l-4.32-1.78c-1.017.66-2.302.74-3.39.18l-3.27 3.27C3.46 22.28 7.43 24 11.978 24c6.627 0 12-5.373 12-12S18.605 0 11.98 0z"/>
-            </svg>
+            <img src="Img/logo steam.png" alt="Steam" class="steam-icon" />
             Perfil de Steam
         </a>
       </div>

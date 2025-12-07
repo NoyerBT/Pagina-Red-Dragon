@@ -282,14 +282,14 @@ if ($user['fecha_expiracion']) {
           
           <div class="dashboard-card" onclick="window.location.href='torneo.php'">
             <span class="card-icon">🏆</span>
-            <h3 class="card-title">Organizar Torneo</h3>
+            <h3 class="card-title">Organizar Mi Torneo</h3>
             <p class="card-description">Crea brackets y gestiona tus encuentros privados</p>
           </div>
           
           <div class="dashboard-card" onclick="window.location.href='anticheats.php'">
             <span class="card-icon">🛡️</span>
             <h3 class="card-title">Anticheats RDC</h3>
-            <p class="card-description">Conoce nuestros sistemas de protección</p>
+            <p class="card-description">Conoce nuestros sistemas de anticheats y revision</p>
           </div>
         </div>
       </div>

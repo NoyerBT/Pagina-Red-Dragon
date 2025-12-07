@@ -21,7 +21,8 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Verificar conexión
 if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+    // No usar die() directamente, lanzar excepción para que pueda ser manejada
+    throw new Exception("Conexión fallida: " . $conn->connect_error);
 }
 
 // Configurar charset

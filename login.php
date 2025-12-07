@@ -288,7 +288,7 @@ session_start();
       <div class="login-card">
         <form action="procesar_login.php" method="POST">
           <h2 class="login-title">Iniciar Sesión</h2>
-          <p class="login-subtitle">Accede a tu cuenta de Red Dragons Cup</p>
+          <p class="login-subtitle">Accede a tu cuenta con tu usario y contraseña</p>
           
           <?php
           if (isset($_SESSION['login_error'])) {
