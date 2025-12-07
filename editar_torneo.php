@@ -45,13 +45,16 @@ if (!$plan_activo) {
 
 // Cargar datos del torneo
 $torneo = null;
-$stmt = $conn->prepare("SELECT id, nombre_torneo, logo FROM torneos WHERE id = ? AND usuario_id = ?");
+$stmt = $conn->prepare("SELECT id, nombre_torneo, logo, modalidad FROM torneos WHERE id = ? AND usuario_id = ?");
 $stmt->bind_param("ii", $torneo_id, $usuario_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($torneo = $result->fetch_assoc()) {
-    // Torneo encontrado
+    // Si no tiene modalidad, asignar Single Elimination por defecto
+    if (empty($torneo['modalidad'])) {
+        $torneo['modalidad'] = 'Single Elimination';
+    }
 } else {
     header("Location: torneo.php");
     exit();
@@ -227,6 +230,17 @@ $conn->close();
           </div>
           
           <div class="form-group">
+            <label for="modalidad_torneo">Modalidad del Torneo *</label>
+            <select id="modalidad_torneo" name="modalidad_torneo" required style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; color: #fff; font-size: 1rem;">
+              <option value="Single Elimination" <?php echo ($torneo['modalidad'] === 'Single Elimination') ? 'selected' : ''; ?>>Single Elimination</option>
+              <option value="Double Elimination" <?php echo ($torneo['modalidad'] === 'Double Elimination') ? 'selected' : ''; ?>>Double Elimination</option>
+            </select>
+            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; margin-top: 0.5rem;">
+              ⚠️ Cambiar la modalidad solo generará el bracket B si no hay matches completados. Si ya hay resultados, se mantendrá la estructura actual.
+            </p>
+          </div>
+          
+          <div class="form-group">
             <label for="logo_torneo">Logo del Torneo (PNG o JPG)</label>
             <input type="file" id="logo_torneo" name="logo" accept="image/png,image/jpeg,image/jpg" onchange="previewLogo(this)">
             <?php if (!empty($torneo['logo'])): ?>
@@ -295,8 +309,15 @@ $conn->close();
       e.preventDefault();
       
       const nombre = document.getElementById('nombre_torneo').value.trim();
+      const modalidad = document.getElementById('modalidad_torneo').value;
+      
       if (!nombre) {
         alert('Debes ingresar un nombre para el torneo');
+        return;
+      }
+      
+      if (!modalidad) {
+        alert('Debes seleccionar una modalidad para el torneo');
         return;
       }
 
@@ -307,6 +328,7 @@ $conn->close();
       const formData = new FormData();
       formData.append('torneo_id', TORNEO_ID);
       formData.append('nombre_torneo', nombre);
+      formData.append('modalidad', modalidad);
       formData.append('eliminar_logo', eliminarLogoActual ? '1' : '0');
       
       const logoInput = document.getElementById('logo_torneo');

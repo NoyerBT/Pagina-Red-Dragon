@@ -8,8 +8,16 @@ if (!isset($_SESSION['usuario'])) {
 
 require_once 'cnt/conexion.php';
 
+// Verificar si existe la columna pais
+$check_pais = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'pais'");
+$pais_column_exists = $check_pais && $check_pais->num_rows > 0;
+
 // Obtener información del usuario
-$sql = "SELECT nombre, fecha_expiracion FROM usuarios WHERE usuario = ?";
+if ($pais_column_exists) {
+    $sql = "SELECT nombre, fecha_expiracion, pais FROM usuarios WHERE usuario = ?";
+} else {
+    $sql = "SELECT nombre, fecha_expiracion FROM usuarios WHERE usuario = ?";
+}
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $_SESSION['usuario']);
 $stmt->execute();
@@ -24,6 +32,12 @@ if ($user['fecha_expiracion']) {
     $dias_restantes = $hoy->diff($fecha_expiracion)->format('%r%a');
     $dias_restantes = intval($dias_restantes) > 0 ? $dias_restantes : 0;
 }
+
+// Obtener mensajes de sesión si existen
+$mensaje_cuenta = isset($_SESSION['mensaje_cuenta']) ? $_SESSION['mensaje_cuenta'] : '';
+$tipo_mensaje_cuenta = isset($_SESSION['tipo_mensaje_cuenta']) ? $_SESSION['tipo_mensaje_cuenta'] : '';
+unset($_SESSION['mensaje_cuenta']);
+unset($_SESSION['tipo_mensaje_cuenta']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -273,11 +287,23 @@ if ($user['fecha_expiracion']) {
         <img src="Img/logo hacia la izquierda.png" alt="Logo Red Dragons Cup" class="hero-logo" />
         <p class="welcome-subtitle">Estamos encantados de tenerte en Red Dragons</p>
         
+        <?php if ($mensaje_cuenta): ?>
+          <div class="mensaje-cuenta <?php echo $tipo_mensaje_cuenta; ?>" style="max-width: 600px; margin: 2rem auto; padding: 1rem 1.5rem; border-radius: 10px; background: <?php echo $tipo_mensaje_cuenta === 'success' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)'; ?>; border: 1px solid <?php echo $tipo_mensaje_cuenta === 'success' ? 'rgba(76, 175, 80, 0.4)' : 'rgba(244, 67, 54, 0.4)'; ?>; color: <?php echo $tipo_mensaje_cuenta === 'success' ? '#4CAF50' : '#f44336'; ?>; text-align: center; animation: fadeInUp 0.6s ease-out;">
+            <?php echo htmlspecialchars($mensaje_cuenta); ?>
+          </div>
+        <?php endif; ?>
+
         <div class="dashboard-actions">
           <div class="dashboard-card" onclick="mostrarPlan()">
             <span class="card-icon">💎</span>
             <h3 class="card-title">Mi Suscripción</h3>
             <p class="card-description">Consulta el estado de tu plan y gestiona tu suscripción</p>
+          </div>
+          
+          <div class="dashboard-card" onclick="mostrarConfiguracion()">
+            <span class="card-icon">⚙️</span>
+            <h3 class="card-title">Configuración</h3>
+            <p class="card-description">Cambia tu contraseña y región</p>
           </div>
           
           <div class="dashboard-card" onclick="window.location.href='torneo.php'">
@@ -334,12 +360,106 @@ if ($user['fecha_expiracion']) {
         
         <button class="close-plan" onclick="ocultarPlan()">Cerrar</button>
       </div>
+
+      <div class="plan-info" id="configInfo">
+        <div class="plan-header">
+          <span style="font-size: 2rem;">⚙️</span>
+          <h3>Configuración de Cuenta</h3>
+        </div>
+
+        <!-- Cambiar Contraseña -->
+        <div style="margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+          <h4 style="color: #d4af37; font-size: 1.3rem; margin-bottom: 1rem;">🔒 Cambiar Contraseña</h4>
+          <form method="POST" action="procesar_cambios_cuenta.php" onsubmit="return validarCambioPassword(event)">
+            <input type="hidden" name="accion" value="cambiar_password">
+            
+            <div style="margin-bottom: 1rem;">
+              <label style="display: block; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem; font-size: 0.95rem;">Contraseña Actual:</label>
+              <input type="password" name="password_actual" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.4); color: #fff; font-size: 1rem;">
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <label style="display: block; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem; font-size: 0.95rem;">Nueva Contraseña:</label>
+              <input type="password" name="password_nueva" id="password_nueva" required minlength="8" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.4); color: #fff; font-size: 1rem;">
+              <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;">Mínimo 8 caracteres</small>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label style="display: block; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem; font-size: 0.95rem;">Confirmar Nueva Contraseña:</label>
+              <input type="password" name="password_confirmar" id="password_confirmar" required minlength="8" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.4); color: #fff; font-size: 1rem;">
+            </div>
+
+            <button type="submit" style="padding: 0.75rem 2rem; background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 10px; color: #d4af37; cursor: pointer; transition: all 0.3s ease; font-weight: 600; font-size: 0.95rem;">
+              Cambiar Contraseña
+            </button>
+          </form>
+        </div>
+
+        <!-- Cambiar País/Región -->
+        <div>
+          <h4 style="color: #d4af37; font-size: 1.3rem; margin-bottom: 1rem;">🌍 Cambiar Región/País</h4>
+          <form method="POST" action="procesar_cambios_cuenta.php">
+            <input type="hidden" name="accion" value="cambiar_pais">
+            
+            <div style="margin-bottom: 1.5rem;">
+              <label style="display: block; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem; font-size: 0.95rem;">País Actual:</label>
+              <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 1rem; font-size: 0.9rem;">
+                <?php 
+                if ($pais_column_exists && isset($user['pais']) && !empty($user['pais'])) {
+                  $paises = [
+                    'PE' => 'Perú',
+                    'CO' => 'Colombia',
+                    'MX' => 'México',
+                    'AR' => 'Argentina',
+                    'CL' => 'Chile',
+                    'EC' => 'Ecuador',
+                    'BO' => 'Bolivia',
+                    'VE' => 'Venezuela',
+                    'UY' => 'Uruguay',
+                    'PY' => 'Paraguay'
+                  ];
+                  echo htmlspecialchars($paises[$user['pais']] ?? $user['pais']);
+                } else {
+                  echo 'No asignado';
+                }
+                ?>
+              </p>
+              
+              <label style="display: block; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem; font-size: 0.95rem;">Seleccionar Nuevo País:</label>
+              <select name="pais" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.4); color: #fff; font-size: 1rem;">
+                <option value="">Selecciona tu país</option>
+                <option value="PE" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'PE') ? 'selected' : ''; ?>>Perú</option>
+                <option value="CO" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'CO') ? 'selected' : ''; ?>>Colombia</option>
+                <option value="MX" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'MX') ? 'selected' : ''; ?>>México</option>
+                <option value="AR" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'AR') ? 'selected' : ''; ?>>Argentina</option>
+                <option value="CL" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'CL') ? 'selected' : ''; ?>>Chile</option>
+                <option value="EC" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'EC') ? 'selected' : ''; ?>>Ecuador</option>
+                <option value="BO" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'BO') ? 'selected' : ''; ?>>Bolivia</option>
+                <option value="VE" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'VE') ? 'selected' : ''; ?>>Venezuela</option>
+                <option value="UY" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'UY') ? 'selected' : ''; ?>>Uruguay</option>
+                <option value="PY" <?php echo ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'PY') ? 'selected' : ''; ?>>Paraguay</option>
+              </select>
+              <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+                El cambio de país afectará los métodos de pago disponibles.
+              </small>
+            </div>
+
+            <button type="submit" style="padding: 0.75rem 2rem; background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 10px; color: #d4af37; cursor: pointer; transition: all 0.3s ease; font-weight: 600; font-size: 0.95rem;">
+              Cambiar País
+            </button>
+          </form>
+        </div>
+        
+        <button class="close-plan" onclick="ocultarConfiguracion()" style="margin-top: 2rem;">Cerrar</button>
+      </div>
     </section>
   </main>
 
   <script>
     function mostrarPlan() {
       const planInfo = document.getElementById('planInfo');
+      const configInfo = document.getElementById('configInfo');
+      configInfo.classList.remove('active');
       planInfo.classList.add('active');
       planInfo.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -350,6 +470,41 @@ if ($user['fecha_expiracion']) {
       setTimeout(() => {
         document.querySelector('.welcome-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 300);
+    }
+
+    function mostrarConfiguracion() {
+      const planInfo = document.getElementById('planInfo');
+      const configInfo = document.getElementById('configInfo');
+      planInfo.classList.remove('active');
+      configInfo.classList.add('active');
+      configInfo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function ocultarConfiguracion() {
+      const configInfo = document.getElementById('configInfo');
+      configInfo.classList.remove('active');
+      setTimeout(() => {
+        document.querySelector('.welcome-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }
+
+    function validarCambioPassword(event) {
+      const passwordNueva = document.getElementById('password_nueva').value;
+      const passwordConfirmar = document.getElementById('password_confirmar').value;
+
+      if (passwordNueva !== passwordConfirmar) {
+        event.preventDefault();
+        alert('Las nuevas contraseñas no coinciden.');
+        return false;
+      }
+
+      if (passwordNueva.length < 8) {
+        event.preventDefault();
+        alert('La nueva contraseña debe tener al menos 8 caracteres.');
+        return false;
+      }
+
+      return true;
     }
   </script>
 

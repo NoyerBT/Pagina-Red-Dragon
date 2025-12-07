@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $torneo_id = intval($_POST['torneo_id'] ?? 0);
 $nombre_torneo = trim($_POST['nombre_torneo'] ?? '');
+$modalidad = trim($_POST['modalidad'] ?? 'Single Elimination');
 $eliminar_logo = isset($_POST['eliminar_logo']) && $_POST['eliminar_logo'] === '1';
 
 if ($torneo_id <= 0 || empty($nombre_torneo)) {
@@ -70,9 +71,14 @@ if ($torneo_id <= 0 || empty($nombre_torneo)) {
     exit();
 }
 
+// Validar modalidad
+if (!in_array($modalidad, ['Single Elimination', 'Double Elimination'])) {
+    $modalidad = 'Single Elimination';
+}
+
 try {
     // Verificar que el torneo pertenezca al usuario
-    $stmt = $conn->prepare("SELECT id, logo FROM torneos WHERE id = ? AND usuario_id = ?");
+    $stmt = $conn->prepare("SELECT id, logo, modalidad FROM torneos WHERE id = ? AND usuario_id = ?");
     if (!$stmt) {
         throw new Exception("Error al preparar la consulta: " . $conn->error);
     }
@@ -90,7 +96,80 @@ try {
     
     $torneo_actual = $result->fetch_assoc();
     $logo_anterior = $torneo_actual['logo'];
+    $modalidad_anterior = $torneo_actual['modalidad'] ?? 'Single Elimination';
     $stmt->close();
+    
+    // Si se cambia a Double Elimination y no hay matches completados, generar bracket B
+    $cambio_a_double = ($modalidad === 'Double Elimination' && $modalidad_anterior !== 'Double Elimination');
+    if ($cambio_a_double) {
+        // Verificar si hay matches completados
+        $check_matches = $conn->query("SELECT COUNT(*) as total FROM matches WHERE torneo_id = $torneo_id AND completado = 1");
+        $matches_completados = $check_matches->fetch_assoc()['total'];
+        
+        if ($matches_completados == 0) {
+            // No hay matches completados, podemos generar el bracket B
+            // Obtener número de equipos
+            $check_equipos = $conn->query("SELECT COUNT(*) as total FROM equipos_torneo WHERE torneo_id = $torneo_id");
+            $total_equipos = $check_equipos->fetch_assoc()['total'];
+            
+            if ($total_equipos > 0) {
+                // Obtener matches de ronda 1 del Winners
+                $check_ronda1 = $conn->query("SELECT COUNT(*) as total FROM matches WHERE torneo_id = $torneo_id AND bracket_tipo = 'winners' AND ronda = 1");
+                $matches_ronda1 = $check_ronda1->fetch_assoc()['total'];
+                
+                if ($matches_ronda1 > 0) {
+                    // Generar bracket B (similar a la lógica en brackets_torneo.php)
+                    $matches_losers_r1 = ceil($matches_ronda1 / 2);
+                    for ($i = 1; $i <= $matches_losers_r1; $i++) {
+                        $conn->query("INSERT INTO matches (torneo_id, bracket_tipo, ronda, numero_match, equipo1_id, equipo2_id) 
+                                     VALUES ($torneo_id, 'losers', 1, $i, NULL, NULL)");
+                    }
+                    
+                    // Generar rondas siguientes del Losers Bracket
+                    $max_ronda_winners = $conn->query("SELECT MAX(ronda) as max_ronda FROM matches WHERE torneo_id = $torneo_id AND bracket_tipo = 'winners'");
+                    $max_ronda = $max_ronda_winners->fetch_assoc()['max_ronda'] ?? 1;
+                    
+                    $ronda_losers = 2;
+                    $matches_losers_actual = $matches_losers_r1;
+                    $ronda_winners = 2;
+                    
+                    while ($ronda_winners <= $max_ronda) {
+                        $matches_winners_perdedores = ceil($matches_ronda1 / pow(2, $ronda_winners - 1));
+                        $matches_losers_ganadores = ceil($matches_losers_actual / 2);
+                        $matches_losers_ronda = max($matches_winners_perdedores, $matches_losers_ganadores);
+                        
+                        if ($matches_losers_ronda > 0) {
+                            for ($i = 1; $i <= $matches_losers_ronda; $i++) {
+                                $conn->query("INSERT INTO matches (torneo_id, bracket_tipo, ronda, numero_match, equipo1_id, equipo2_id) 
+                                             VALUES ($torneo_id, 'losers', $ronda_losers, $i, NULL, NULL)");
+                            }
+                            $matches_losers_actual = $matches_losers_ronda;
+                        }
+                        
+                        $ronda_losers++;
+                        $ronda_winners++;
+                        
+                        // Ronda impar de Losers: Solo ganadores de la ronda anterior
+                        if ($ronda_losers <= ($max_ronda - 1) * 2) {
+                            $matches_losers_ronda_impar = ceil($matches_losers_actual / 2);
+                            if ($matches_losers_ronda_impar > 0) {
+                                for ($i = 1; $i <= $matches_losers_ronda_impar; $i++) {
+                                    $conn->query("INSERT INTO matches (torneo_id, bracket_tipo, ronda, numero_match, equipo1_id, equipo2_id) 
+                                                 VALUES ($torneo_id, 'losers', $ronda_losers, $i, NULL, NULL)");
+                                }
+                                $matches_losers_actual = $matches_losers_ronda_impar;
+                                $ronda_losers++;
+                            }
+                        }
+                    }
+                    
+                    // Crear Gran Final vacía
+                    $conn->query("INSERT INTO matches (torneo_id, bracket_tipo, ronda, numero_match, equipo1_id, equipo2_id) 
+                                 VALUES ($torneo_id, 'grand_final', 1, 1, NULL, NULL)");
+                }
+            }
+        }
+    }
     
     $logo_path = $logo_anterior;
     
@@ -141,12 +220,12 @@ try {
     }
     
     // Actualizar torneo
-    $stmt = $conn->prepare("UPDATE torneos SET nombre_torneo = ?, logo = ? WHERE id = ? AND usuario_id = ?");
+    $stmt = $conn->prepare("UPDATE torneos SET nombre_torneo = ?, logo = ?, modalidad = ? WHERE id = ? AND usuario_id = ?");
     if (!$stmt) {
         throw new Exception("Error al preparar la consulta: " . $conn->error);
     }
     
-    $stmt->bind_param("ssii", $nombre_torneo, $logo_path, $torneo_id, $usuario_id);
+    $stmt->bind_param("sssii", $nombre_torneo, $logo_path, $modalidad, $torneo_id, $usuario_id);
     
     if (!$stmt->execute()) {
         throw new Exception("Error al actualizar el torneo: " . $conn->error);

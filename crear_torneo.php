@@ -516,7 +516,9 @@ $conn->close();
       <?php else: ?>
         <!-- Paso 2: Agregar Equipos -->
         <div class="alert alert-info">
-          <strong>💡 Información:</strong> Torneo: <strong><?php echo htmlspecialchars($torneo_nombre); ?></strong>. Puedes agregar equipos sin límite.
+          <strong>💡 Información:</strong> Torneo: <strong><?php echo htmlspecialchars($torneo_nombre); ?></strong>. 
+          <strong style="color: #ffd277;">Se requieren mínimo 12 equipos</strong> (número par) para generar los brackets del torneo.
+          <br><small style="color: rgba(255, 255, 255, 0.7);">Los equipos deben ser pares para crear enfrentamientos 1 vs 1 (12 equipos = 6 matches, 14 equipos = 7 matches, etc.)</small>
         </div>
 
         <div class="crear-torneo-card">
@@ -553,6 +555,48 @@ $conn->close();
 
           <div class="equipos-list" id="equipos-list">
             <h3>Equipos Agregados</h3>
+            <?php 
+            $total_equipos_actual = count($equipos_existentes);
+            $minimo_equipos = 12;
+            $faltan = max(0, $minimo_equipos - $total_equipos_actual);
+            ?>
+            <div style="background: rgba(40, 40, 40, 0.8); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 2px solid <?php 
+              if ($total_equipos_actual >= $minimo_equipos && $total_equipos_actual % 2 == 0) {
+                echo 'rgba(39, 174, 96, 0.5)'; // Verde si cumple todo
+              } elseif ($total_equipos_actual % 2 != 0) {
+                echo 'rgba(231, 76, 60, 0.5)'; // Rojo si es impar
+              } else {
+                echo 'rgba(212, 175, 55, 0.5)'; // Amarillo si falta llegar al mínimo
+              }
+            ?>;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                  <strong style="color: #d4af37;">Equipos agregados:</strong> 
+                  <span style="color: #fff; font-size: 1.2rem; font-weight: bold;"><?php echo $total_equipos_actual; ?></span>
+                  <?php if ($total_equipos_actual > 0 && $total_equipos_actual % 2 != 0): ?>
+                  <span style="color: #e74c3c; margin-left: 0.5rem;">⚠️ (Impar)</span>
+                  <?php endif; ?>
+                </div>
+                <?php if ($total_equipos_actual < $minimo_equipos): ?>
+                <div style="color: #ffd277;">
+                  <strong>Faltan:</strong> <?php echo $faltan; ?> equipos para el mínimo requerido (12)
+                </div>
+                <?php elseif ($total_equipos_actual % 2 != 0): ?>
+                <div style="color: #e74c3c;">
+                  <strong>⚠️ Número impar</strong> - Necesitas agregar o eliminar 1 equipo
+                </div>
+                <?php else: ?>
+                <div style="color: #27ae60;">
+                  <strong>✅ Listo</strong> - Puedes generar los brackets (<?php echo $total_equipos_actual / 2; ?> matches)
+                </div>
+                <?php endif; ?>
+              </div>
+              <?php if ($total_equipos_actual < $minimo_equipos): ?>
+              <div style="margin-top: 1rem; background: rgba(0, 0, 0, 0.3); height: 8px; border-radius: 4px; overflow: hidden;">
+                <div style="background: linear-gradient(90deg, #d4af37, #ffd277); height: 100%; width: <?php echo min(100, ($total_equipos_actual / $minimo_equipos) * 100); ?>%; transition: width 0.3s ease;"></div>
+              </div>
+              <?php endif; ?>
+            </div>
             <div id="equipos-list-container">
               <div class="equipos-list-empty">No hay equipos agregados aún. Agrega tu primer equipo arriba.</div>
             </div>

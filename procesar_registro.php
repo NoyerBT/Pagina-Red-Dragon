@@ -19,6 +19,7 @@ try {
     $usuario = trim($_POST['usuario']);
     $password_form = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
+    $pais = isset($_POST['pais']) ? trim($_POST['pais']) : '';
 
     // Basic validation
     if (empty($nombre) || empty($email) || empty($usuario) || empty($password_form) || empty($confirm_password)) {
@@ -48,13 +49,28 @@ try {
         throw new Exception("El nombre de usuario o correo electrónico ya existe.");
     }
 
-    // Insert user into database with 'activo' state (auto-activated)
-    $sql = "INSERT INTO usuarios (nombre, email, usuario, password, estado) VALUES (?, ?, ?, ?, 'activo')";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        throw new Exception("Error al preparar la consulta: " . $conn->error);
+    // Verificar si existe la columna pais, si no, crearla
+    $check_pais = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'pais'");
+    if ($check_pais && $check_pais->num_rows === 0) {
+        $conn->query("ALTER TABLE usuarios ADD COLUMN pais VARCHAR(10) DEFAULT NULL");
     }
-    $stmt->bind_param("ssss", $nombre, $email, $usuario, $hashed_password);
+    
+    // Insert user into database with 'activo' state (auto-activated)
+    if (!empty($pais)) {
+        $sql = "INSERT INTO usuarios (nombre, email, usuario, password, estado, pais) VALUES (?, ?, ?, ?, 'activo', ?)";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $conn->error);
+        }
+        $stmt->bind_param("sssss", $nombre, $email, $usuario, $hashed_password, $pais);
+    } else {
+        $sql = "INSERT INTO usuarios (nombre, email, usuario, password, estado) VALUES (?, ?, ?, ?, 'activo')";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $conn->error);
+        }
+        $stmt->bind_param("ssss", $nombre, $email, $usuario, $hashed_password);
+    }
 
     if ($stmt->execute()) {
         // Redirect to a success page

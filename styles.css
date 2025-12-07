@@ -1845,6 +1845,10 @@ body {
   transform: scale(0.95);
 }
 
+.Btn-renovar::before {
+  content: "RENOVAR PLAN";
+}
+
 /* Premium Card Styles */
 .card_box {
   width: 100%;
@@ -2610,14 +2614,14 @@ body {
 
 .payment-methods {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin: 2rem 0;
 }
 
 .payment-card {
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 85, 0, 0.35);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(30, 30, 30, 0.7) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.3);
   border-radius: 18px;
   padding: 1.6rem;
   text-align: center;
@@ -2627,15 +2631,53 @@ body {
   overflow: hidden;
 }
 
+.payment-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
 .payment-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(255, 80, 0, 0.25);
-  border-color: rgba(255, 120, 0, 0.7);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 35px rgba(212, 175, 55, 0.2);
+  border-color: rgba(212, 175, 55, 0.6);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 30, 30, 0.8) 100%);
+}
+
+.payment-card:hover::before {
+  opacity: 1;
 }
 
 .payment-card h3 {
-  color: #ffbba0;
+  color: #d4af37;
   margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.payment-card p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 1200px) {
+  .payment-methods {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Mac-Style Steps Section */

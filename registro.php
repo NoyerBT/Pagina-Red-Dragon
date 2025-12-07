@@ -1,6 +1,12 @@
 <?php
 // Página de Registro - Red Dragons Cup
 session_start();
+
+// Si el usuario ya está autenticado, redirigir a la página de pago
+if (isset($_SESSION['usuario'])) {
+    header("Location: pago.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -146,20 +152,16 @@ session_start();
     <h2>💳 Métodos de Pago Disponibles</h2>
     <div class="payment-methods">
       <div class="payment-card">
-        <h3>💳 Tarjeta de Crédito/Débito</h3>
-        <p>Visa, Mastercard, American Express</p>
+        <h3>💳 Deposito Lemon Card - Cuaquier banco </h3>
+        <p>Lemon Card CCI</p>
       </div>
       <div class="payment-card">
-        <h3>📱 Yape</h3>
-        <p>Pago móvil instantáneo</p>
+        <h3>📱 Lemon Card</h3>
+        <p>Pago móvil QR instantáneo</p>
       </div>
       <div class="payment-card">
-        <h3>🏦 Transferencia Bancaria</h3>
-        <p>BCP</p>
-      </div>
-      <div class="payment-card">
-        <h3>💰 PagoEfectivo</h3>
-        <p>"Aun en desarrollo"</p>
+        <h3>🏦 Transferencia Bancaria solo BCP</h3>
+        <p>BCP CCI</p>
       </div>
     </div>
   </section>

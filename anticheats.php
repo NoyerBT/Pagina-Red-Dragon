@@ -1,5 +1,44 @@
 <?php
 session_start();
+
+// Verificar si el usuario es VIP
+$es_vip = false;
+$vip_activo = false;
+
+if (isset($_SESSION['usuario'])) {
+    require_once 'cnt/conexion.php';
+    
+    $sql = "SELECT vip, fecha_expiracion FROM usuarios WHERE usuario = ? LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $_SESSION['usuario']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($user = $result->fetch_assoc()) {
+        // Verificar explícitamente que vip sea exactamente 1 (no null, no 0, no string)
+        if (isset($user['vip']) && $user['vip'] == 1 && $user['vip'] !== '0' && $user['vip'] !== 0) {
+            $es_vip = true;
+            // Verificar si la fecha de expiración no ha pasado
+            if (!empty($user['fecha_expiracion'])) {
+                $fecha_expiracion = new DateTime($user['fecha_expiracion']);
+                $fecha_actual = new DateTime();
+                if ($fecha_expiracion >= $fecha_actual) {
+                    $vip_activo = true;
+                }
+            } else {
+                // Si no tiene fecha de expiración pero es VIP, considerarlo activo
+                $vip_activo = true;
+            }
+        } else {
+            // Asegurarse de que si no es VIP, las variables estén en false
+            $es_vip = false;
+            $vip_activo = false;
+        }
+    }
+    
+    $stmt->close();
+    $conn->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -43,7 +82,7 @@ session_start();
 
   <section class="section" id="cta-anticheat">
     <div class="plan-actions">
-      <?php if (isset($_SESSION['usuario'])): ?>
+      <?php if (isset($_SESSION['usuario']) && $vip_activo): ?>
         <div class="btn-wrapper plan-actions__btn">
           <a href="generar_claves.php" class="btn">
             <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -74,6 +113,26 @@ session_start();
             </div>
           </a>
         </div>
+      <?php elseif (isset($_SESSION['usuario']) && !$vip_activo): ?>
+        <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.7);">
+          <h3 style="color: #d4af37; margin-bottom: 1rem;">⭐ Acceso VIP Requerido</h3>
+          <p style="margin-bottom: 1rem;">Los botones de generar claves y descargar el anticheat están disponibles únicamente para usuarios VIP.</p>
+          <div class="btn-wrapper plan-actions__btn" style="margin-top: 2rem; display: inline-block;">
+            <a href="pago.php" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">A</span><span class="btn-letter">d</span><span class="btn-letter">q</span><span class="btn-letter">u</span><span class="btn-letter">i</span><span class="btn-letter">r</span><span class="btn-letter">i</span><span class="btn-letter">r</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">A</span><span class="btn-letter">d</span><span class="btn-letter">q</span><span class="btn-letter">u</span><span class="btn-letter">i</span><span class="btn-letter">r</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
       <?php else: ?>
         <div class="btn-wrapper plan-actions__btn">
           <a href="https://github.com/HQ27x/anticheatRDC/releases/download/v3/RDC_VerifierV3.exe" class="btn">
@@ -91,7 +150,7 @@ session_start();
           </a>
         </div>
         <div class="btn-wrapper plan-actions__btn">
-          <a href="registro.php" class="btn">
+          <a href="<?php echo isset($_SESSION['usuario']) ? 'pago.php' : 'registro.php'; ?>" class="btn">
             <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
             </svg>
@@ -109,6 +168,8 @@ session_start();
     </div>
     <?php if (!isset($_SESSION['usuario'])): ?>
       <p class="plan-note plan-note--highlight">Necesitas crear una cuenta para continuar</p>
+    <?php elseif (isset($_SESSION['usuario']) && !$vip_activo): ?>
+      <p class="plan-note plan-note--highlight">Necesitas ser usuario VIP para acceder a estas funciones</p>
     <?php endif; ?>
   </section>
 
@@ -167,7 +228,7 @@ session_start();
             </li>
           <?php endforeach; ?>
         </ul>
-        <a href="registro.php" class="Btn" style="margin-top: 1.4rem;"></a>
+        <a href="<?php echo isset($_SESSION['usuario']) ? 'pago.php' : 'registro.php'; ?>" class="Btn<?php echo (isset($_SESSION['usuario']) && $es_vip) ? ' Btn-renovar' : ''; ?>" style="margin-top: 1.4rem;"></a>
       </article>
     </div>
   </section>

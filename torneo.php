@@ -182,13 +182,15 @@ if ($userHasAccount) {
             </a>
           </div>
           <div class="btn-wrapper plan-actions__btn">
-            <a href="dashboard.php" class="btn">
+            <a href="#" onclick="abrirModalMiServidor(); return false;" class="btn">
               <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
               </svg>
               <div class="txt-wrapper">
                 <div class="txt-1">
-                  <span class="btn-letter">D</span><span class="btn-letter">a</span><span class="btn-letter">s</span><span class="btn-letter">h</span><span class="btn-letter">b</span><span class="btn-letter">o</span><span class="btn-letter">a</span><span class="btn-letter">r</span><span class="btn-letter">d</span>
+                  <span class="btn-letter">M</span><span class="btn-letter">i</span>
+                  <span class="btn-letter"> </span>
+                  <span class="btn-letter">S</span><span class="btn-letter">e</span><span class="btn-letter">r</span><span class="btn-letter">v</span><span class="btn-letter">i</span><span class="btn-letter">d</span><span class="btn-letter">o</span><span class="btn-letter">r</span>
                 </div>
                 <div class="txt-2">
                   <span class="btn-letter">A</span><span class="btn-letter">c</span><span class="btn-letter">c</span><span class="btn-letter">e</span><span class="btn-letter">d</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
@@ -405,6 +407,242 @@ if ($userHasAccount) {
         alert('Error al eliminar el torneo: ' + error);
       });
     }
+  </script>
+  
+  <!-- Modal MI SERVIDOR -->
+  <div id="modalMiServidor" class="modal-servidor" style="display: none;">
+    <div class="modal-servidor-content">
+      <div class="modal-servidor-header">
+        <h2>🖥️ Mi Servidor Privado</h2>
+        <button class="modal-servidor-close" onclick="cerrarModalMiServidor()">&times;</button>
+      </div>
+      <div class="modal-servidor-body" id="modalServidorBody">
+        <div class="loading-servidor">
+          <p>Cargando información del servidor...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .modal-servidor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-servidor-content {
+      background: linear-gradient(135deg, rgba(20, 20, 20, 0.98), rgba(30, 30, 30, 0.98));
+      border: 2px solid #d4af37;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-servidor-header {
+      padding: 1.5rem;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-servidor-header h2 {
+      color: #d4af37;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    
+    .modal-servidor-close {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-servidor-close:hover {
+      background: rgba(212, 175, 55, 0.2);
+      color: #d4af37;
+    }
+    
+    .modal-servidor-body {
+      padding: 2rem;
+      color: #fff;
+    }
+    
+    .loading-servidor {
+      text-align: center;
+      padding: 2rem;
+      color: #d4af37;
+    }
+    
+    .servidor-info {
+      text-align: center;
+    }
+    
+    .servidor-ip {
+      background: rgba(212, 175, 55, 0.1);
+      border: 2px solid #d4af37;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    
+    .servidor-ip-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .servidor-ip-value {
+      color: #d4af37;
+      font-size: 1.8rem;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+    }
+    
+    .servidor-no-vip {
+      text-align: center;
+      padding: 2rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .servidor-no-vip h3 {
+      color: #d4af37;
+      margin-bottom: 1rem;
+    }
+    
+    .servidor-error {
+      text-align: center;
+      padding: 2rem;
+      color: #e74c3c;
+    }
+  </style>
+  
+  <script>
+    function abrirModalMiServidor() {
+      const modal = document.getElementById('modalMiServidor');
+      const body = document.getElementById('modalServidorBody');
+      
+      modal.style.display = 'flex';
+      body.innerHTML = '<div class="loading-servidor"><p>Cargando información del servidor...</p></div>';
+      
+      // Cargar IP del servidor
+      fetch('ajax_obtener_ip_servidor.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        credentials: 'same-origin'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (data.es_vip) {
+            // Usuario VIP
+            if (data.ip_servidor) {
+              // VIP con IP asignada
+              body.innerHTML = `
+                <div class="servidor-info">
+                  <div class="servidor-ip">
+                    <div class="servidor-ip-label">Dirección IP de tu Servidor Privado</div>
+                    <div class="servidor-ip-value">${data.ip_servidor}</div>
+                  </div>
+                  <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; margin-top: 1rem;">
+                    Esta IP es exclusiva para tu cuenta VIP. No la compartas con otros usuarios.
+                  </p>
+                </div>
+              `;
+            } else {
+              // VIP sin IP asignada aún
+              body.innerHTML = `
+                <div class="servidor-no-vip">
+                  <h3>⭐ Eres Usuario VIP</h3>
+                  <p style="margin-top: 1rem; color: #d4af37; font-size: 1.1rem;">
+                    El administrador le designará su IP muy pronto.
+                  </p>
+                  <p style="margin-top: 1rem; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
+                    Recibirás tu IP de servidor privado en breve. Gracias por tu paciencia.
+                  </p>
+                </div>
+              `;
+            }
+          } else {
+            // Usuario NO VIP
+            body.innerHTML = `
+              <div class="servidor-no-vip">
+                <h3>⚠️ No eres usuario VIP</h3>
+                <p>Los servidores privados están disponibles únicamente para usuarios VIP.</p>
+                <p style="margin-top: 1rem; color: #d4af37;">Contacta con un administrador para obtener acceso VIP.</p>
+              </div>
+            `;
+          }
+        } else {
+          body.innerHTML = `
+            <div class="servidor-error">
+              <h3>❌ Error</h3>
+              <p>${data.message || 'No se pudo cargar la información del servidor.'}</p>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        body.innerHTML = `
+          <div class="servidor-error">
+            <h3>❌ Error</h3>
+            <p>Error al conectar con el servidor. Por favor, intenta nuevamente.</p>
+          </div>
+        `;
+      });
+    }
+    
+    function cerrarModalMiServidor() {
+      document.getElementById('modalMiServidor').style.display = 'none';
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('modalMiServidor').addEventListener('click', function(e) {
+      if (e.target === this) {
+        cerrarModalMiServidor();
+      }
+    });
+    
+    // Cerrar con ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        cerrarModalMiServidor();
+      }
+    });
   </script>
   
   <?php

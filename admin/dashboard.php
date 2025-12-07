@@ -8,132 +8,77 @@ if (!isset($_SESSION['admin_usuario'])) {
 
 require_once '../cnt/conexion.php';
 
+// Limpiar IPs de usuarios VIP expirados automáticamente
+$check_table = $conn->query("SHOW TABLES LIKE 'usuarios_vip_ips'");
+if ($check_table && $check_table->num_rows > 0) {
+    $sql_cleanup = "DELETE vip FROM usuarios_vip_ips vip
+                   INNER JOIN usuarios u ON vip.usuario_id = u.id
+                   WHERE u.fecha_expiracion IS NOT NULL 
+                   AND u.fecha_expiracion < CURDATE()";
+    $conn->query($sql_cleanup);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accion = $_POST['accion'] ?? '';
 
-    switch ($accion) {
-        case 'agregar_equipo':
-            $nombre = trim($_POST['nombre_equipo'] ?? '');
-            $seed = intval($_POST['seed'] ?? 0);
-            if ($nombre !== '' && $seed > 0) {
-                $nombre = $conn->real_escape_string($nombre);
-                if ($conn->query("INSERT INTO equipos (nombre, seed) VALUES ('$nombre', $seed)")) {
-                    $_SESSION['admin_flash'] = 'Equipo agregado correctamente.';
-                } else {
-                    $_SESSION['admin_flash'] = 'No se pudo agregar el equipo. Verifica que el seed no esté repetido.';
-                }
-            } else {
-                $_SESSION['admin_flash'] = 'Nombre y seed son obligatorios.';
-            }
-            break;
-
-        case 'editar_equipo':
-            $id = intval($_POST['equipo_id'] ?? 0);
-            $nombre = trim($_POST['nombre_equipo'] ?? '');
-            $seed = intval($_POST['seed'] ?? 0);
-            if ($id > 0 && $nombre !== '' && $seed > 0) {
-                $nombre = $conn->real_escape_string($nombre);
-                if ($conn->query("UPDATE equipos SET nombre='$nombre', seed=$seed WHERE id=$id")) {
-                    $_SESSION['admin_flash'] = 'Equipo actualizado correctamente.';
-                } else {
-                    $_SESSION['admin_flash'] = 'No se pudo actualizar el equipo.';
-                }
-            } else {
-                $_SESSION['admin_flash'] = 'Datos insuficientes para actualizar el equipo.';
-            }
-            break;
-
-        case 'eliminar_equipo':
-            $id = intval($_POST['equipo_id'] ?? 0);
-            if ($id > 0) {
-                if ($conn->query("DELETE FROM equipos WHERE id=$id")) {
-                    $_SESSION['admin_flash'] = 'Equipo eliminado.';
-                } else {
-                    $_SESSION['admin_flash'] = 'No se pudo eliminar el equipo.';
-                }
-            }
-            break;
-
-        case 'actualizar_match':
-            $match_id = intval($_POST['match_id'] ?? 0);
-            $puntos1 = intval($_POST['puntos_equipo1'] ?? 0);
-            $puntos2 = intval($_POST['puntos_equipo2'] ?? 0);
-            $equipo1_id = isset($_POST['equipo1_id']) ? intval($_POST['equipo1_id']) : null;
-            $equipo2_id = isset($_POST['equipo2_id']) ? intval($_POST['equipo2_id']) : null;
-
-            if ($match_id > 0) {
-                $ganador_id = 'NULL';
-                if ($puntos1 > $puntos2 && $equipo1_id) {
-                    $ganador_id = $equipo1_id;
-                } elseif ($puntos2 > $puntos1 && $equipo2_id) {
-                    $ganador_id = $equipo2_id;
-                }
-
-                $conn->query("UPDATE matches SET 
-                                puntos_equipo1=$puntos1,
-                                puntos_equipo2=$puntos2,
-                                ganador_id=$ganador_id,
-                                completado=1
-                              WHERE id=$match_id");
-                $_SESSION['admin_flash'] = 'Match actualizado.';
-            }
-            break;
-
-        case 'generar_ronda1':
-            $equipos_result = $conn->query("SELECT id FROM equipos WHERE activo=1 ORDER BY seed ASC");
-            $equipos_ids = [];
-            if ($equipos_result) {
-                while ($row = $equipos_result->fetch_assoc()) {
-                    $equipos_ids[] = intval($row['id']);
-                }
-            }
-
-            $match_num = 1;
-            for ($i = 0; $i < count($equipos_ids); $i += 2) {
-                if (isset($equipos_ids[$i]) && isset($equipos_ids[$i + 1])) {
-                    $eq1 = $equipos_ids[$i];
-                    $eq2 = $equipos_ids[$i + 1];
-                    $conn->query("INSERT INTO matches (bracket_tipo, ronda, numero_match, equipo1_id, equipo2_id) 
-                                  VALUES ('winners', 1, $match_num, $eq1, $eq2)");
-                    $match_num++;
-                }
-            }
-            $_SESSION['admin_flash'] = 'Ronda 1 generada con los equipos actuales.';
-            break;
-    }
+    // Las acciones de equipos y brackets han sido eliminadas
+    // Solo se mantiene la gestión de usuarios
 
     header('Location: dashboard.php');
     exit();
 }
 
-// Fetch all non-admin users
-$sql = "SELECT id, usuario, nombre, email, fecha_registro, estado, fecha_expiracion FROM usuarios";
-$result = $conn->query($sql);
+// Obtener término de búsqueda
+$busqueda = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
 
-// Fetch equipos
-$equipos = [];
-$equipos_query = $conn->query("SELECT * FROM equipos ORDER BY seed ASC");
-if ($equipos_query) {
-    while ($row = $equipos_query->fetch_assoc()) {
-        $equipos[] = $row;
+// Verificar si existe la tabla usuarios_vip_ips
+$check_table = $conn->query("SHOW TABLES LIKE 'usuarios_vip_ips'");
+$table_exists = $check_table && $check_table->num_rows > 0;
+
+// Fetch all non-admin users con su IP si existe
+if ($table_exists) {
+    if (!empty($busqueda)) {
+        $busqueda_like = "%" . $conn->real_escape_string($busqueda) . "%";
+        $sql = "SELECT u.id, u.usuario, u.nombre, u.email, u.fecha_registro, u.estado, u.fecha_expiracion, u.vip,
+                       vip.ip_servidor
+                FROM usuarios u
+                LEFT JOIN usuarios_vip_ips vip ON u.id = vip.usuario_id
+                WHERE u.nombre LIKE ? OR u.usuario LIKE ? OR u.email LIKE ?
+                ORDER BY u.id DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $busqueda_like, $busqueda_like, $busqueda_like);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $sql = "SELECT u.id, u.usuario, u.nombre, u.email, u.fecha_registro, u.estado, u.fecha_expiracion, u.vip,
+                       vip.ip_servidor
+                FROM usuarios u
+                LEFT JOIN usuarios_vip_ips vip ON u.id = vip.usuario_id
+                ORDER BY u.id DESC";
+        $result = $conn->query($sql);
+    }
+} else {
+    if (!empty($busqueda)) {
+        $busqueda_like = "%" . $conn->real_escape_string($busqueda) . "%";
+        $sql = "SELECT id, usuario, nombre, email, fecha_registro, estado, fecha_expiracion 
+                FROM usuarios 
+                WHERE nombre LIKE ? OR usuario LIKE ? OR email LIKE ?
+                ORDER BY id DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $busqueda_like, $busqueda_like, $busqueda_like);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $sql = "SELECT id, usuario, nombre, email, fecha_registro, estado, fecha_expiracion FROM usuarios ORDER BY id DESC";
+        $result = $conn->query($sql);
     }
 }
 
-// Fetch matches
-$matches = [];
-$matches_query = $conn->query("SELECT m.*, 
-                                      e1.nombre AS equipo1_nombre,
-                                      e2.nombre AS equipo2_nombre,
-                                      eg.nombre AS ganador_nombre
-                               FROM matches m
-                               LEFT JOIN equipos e1 ON m.equipo1_id = e1.id
-                               LEFT JOIN equipos e2 ON m.equipo2_id = e2.id
-                               LEFT JOIN equipos eg ON m.ganador_id = eg.id
-                               ORDER BY m.bracket_tipo, m.ronda, m.numero_match");
-if ($matches_query) {
-    while ($row = $matches_query->fetch_assoc()) {
-        $matches[] = $row;
-    }
+// Verificar si la consulta fue exitosa
+if ($result === false) {
+    error_log("Error en consulta SQL: " . $conn->error);
+    $sql = "SELECT id, usuario, nombre, email, fecha_registro, estado, fecha_expiracion FROM usuarios ORDER BY id DESC";
+    $result = $conn->query($sql);
 }
 
 $admin_flash = $_SESSION['admin_flash'] ?? null;
@@ -149,6 +94,7 @@ if ($admin_flash) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard - Red Dragons Cup</title>
   <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
       --primary: #d4af37;
@@ -184,6 +130,7 @@ if ($admin_flash) {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1.5rem;
     }
 
     .nav-links a {
@@ -195,6 +142,28 @@ if ($admin_flash) {
       font-weight: 500;
     }
 
+    .nav-links a:first-child {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #000;
+      font-weight: 700;
+      padding: 0.75rem 2rem;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+      border: 2px solid rgba(212, 175, 55, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links a:first-child:hover {
+      background: linear-gradient(135deg, var(--primary-dark), #9a7a1f);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+    }
+
+    .nav-links a:first-child i {
+      font-size: 1.1em;
+    }
+
     .nav-links a:last-child {
       background: var(--primary);
       color: #000;
@@ -204,6 +173,67 @@ if ($admin_flash) {
     .nav-links a:last-child:hover {
       background: var(--primary-dark);
       transform: translateY(-2px);
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      border-radius: 25px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: rgba(212, 175, 55, 0.6);
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      color: var(--primary);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.25rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s ease;
+    }
+
+    .search-clear:hover {
+      color: var(--text-light);
+    }
+
+    .search-clear.visible {
+      display: flex;
     }
 
     .section {
@@ -235,60 +265,104 @@ if ($admin_flash) {
 
     .users-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 2rem;
       margin-top: 2rem;
     }
 
     .user-card {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
+      background: linear-gradient(135deg, #1e1e1e 0%, #252525 100%);
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: var(--box-shadow);
-      transition: var(--transition);
-      border: 1px solid rgba(212, 175, 55, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      position: relative;
+    }
+
+    .user-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .user-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-      border-color: rgba(212, 175, 55, 0.3);
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.3);
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+
+    .user-card:hover::before {
+      opacity: 1;
     }
 
     .user-header {
       background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-      padding: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 1.75rem 1.5rem;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+    }
+
+    .user-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
     }
 
     .user-name {
       margin: 0;
       color: var(--primary);
-      font-size: 1.25rem;
+      font-size: 1.35rem;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      text-shadow: 0 2px 4px rgba(212, 175, 55, 0.2);
+    }
+
+    .user-name i {
+      font-size: 1.1em;
+      opacity: 0.8;
     }
 
     .user-email {
-      margin: 0.25rem 0 0;
+      margin: 0.5rem 0 0;
       color: var(--text-muted);
       font-size: 0.9rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      opacity: 0.85;
     }
 
     .user-details {
-      padding: 1.5rem;
+      padding: 1.75rem 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
     }
 
     .detail-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .detail-row:hover {
+      border-bottom-color: rgba(212, 175, 55, 0.2);
+      padding-left: 0.5rem;
     }
 
     .detail-row:last-child {
@@ -299,41 +373,66 @@ if ($admin_flash) {
 
     .detail-label {
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
     }
 
     .detail-value {
-      font-weight: 500;
+      font-weight: 600;
       text-align: right;
+      color: var(--text-light);
+      font-size: 0.9rem;
     }
 
     .status-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.9rem;
       border-radius: 20px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-badge::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .status-badge:hover::before {
+      left: 100%;
     }
 
     .status-active {
-      background: rgba(40, 167, 69, 0.2);
-      color: #28a745;
+      background: linear-gradient(135deg, rgba(40, 167, 69, 0.25), rgba(40, 167, 69, 0.15));
+      color: #4ade80;
+      border: 1px solid rgba(40, 167, 69, 0.3);
     }
 
     .status-inactive {
-      background: rgba(220, 53, 69, 0.2);
-      color: #dc3545;
+      background: linear-gradient(135deg, rgba(220, 53, 69, 0.25), rgba(220, 53, 69, 0.15));
+      color: #f87171;
+      border: 1px solid rgba(220, 53, 69, 0.3);
     }
 
     .action-buttons {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid rgba(212, 175, 55, 0.15);
     }
 
     .btn {
@@ -365,12 +464,17 @@ if ($admin_flash) {
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
       color: var(--text-light);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.15));
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
     .btn-danger {
@@ -381,25 +485,177 @@ if ($admin_flash) {
     .btn-danger:hover {
       background: rgba(220, 53, 69, 0.3);
     }
-
+    
+    .btn-vip {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: #fff;
+      border: 2px solid rgba(243, 156, 18, 0.5);
+      box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+      font-weight: 600;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+    }
+    
+    .btn-vip:hover {
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(243, 156, 18, 0.5);
+      border-color: rgba(243, 156, 18, 0.8);
+    }
+    
+    .btn-vip i {
+      margin-right: 0.5rem;
+    }
+    
+    .btn-delete {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+      border: 2px solid rgba(231, 76, 60, 0.5);
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+      font-weight: 600;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    
+    .btn-delete:hover {
+      background: linear-gradient(135deg, #c0392b, #a93226);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+      border-color: rgba(231, 76, 60, 0.8);
+    }
+    
+    .btn-delete i {
+      margin-right: 0.5rem;
+    }
+    
     .expiration-form {
       display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .expiration-form input[type="date"] {
-      flex: 1;
-      padding: 0.5rem;
+      gap: 0.75rem;
+      align-items: stretch;
       background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      color: var(--text-light);
-    }
-
-    .expiration-form button {
       padding: 0.5rem;
-      min-width: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(243, 156, 18, 0.2);
+    }
+    
+    .date-input-vip {
+      flex: 1;
+      padding: 0.7rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(243, 156, 18, 0.3);
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .date-input-vip:focus {
+      outline: none;
+      border-color: rgba(243, 156, 18, 0.7);
+      box-shadow: 0 0 12px rgba(243, 156, 18, 0.4);
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .date-input-vip::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    
+    .date-input-vip::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+    }
+    
+    .ip-form {
+      display: flex;
+      gap: 0.75rem;
+      align-items: stretch;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(52, 152, 219, 0.2);
+    }
+    
+    .ip-input {
+      flex: 1;
+      padding: 0.7rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(52, 152, 219, 0.3);
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+      font-weight: 500;
+    }
+    
+    .ip-input:focus {
+      outline: none;
+      border-color: rgba(52, 152, 219, 0.7);
+      box-shadow: 0 0 12px rgba(52, 152, 219, 0.4);
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .ip-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+      font-style: italic;
+    }
+    
+    .ip-display {
+      padding: 0.6rem 1rem;
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(52, 152, 219, 0.08));
+      border: 1px solid rgba(52, 152, 219, 0.4);
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      color: #60a5fa;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: inline-block;
+      box-shadow: 0 2px 6px rgba(52, 152, 219, 0.2);
+      letter-spacing: 0.5px;
+    }
+    
+    .admin-alert {
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(41, 128, 185, 0.2));
+      border: 2px solid rgba(52, 152, 219, 0.5);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin: 1rem 0 2rem;
+      color: #3498db;
+      font-weight: 500;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .no-users {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+    
+    .no-users i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
     }
 
     @media (max-width: 768px) {
@@ -412,31 +668,23 @@ if ($admin_flash) {
         gap: 1rem;
       }
       
+      .nav-links a:first-child,
       .nav-links a:last-child {
         width: 100%;
         text-align: center;
       }
+
+      .search-container {
+        max-width: 100%;
+        width: 100%;
+      }
     }
     .action-buttons .btn {
-        margin: 2px 0;
+        width: 100%;
         white-space: nowrap;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-    }
-    .expiration-form {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 5px;
-        align-items: center;
-        min-width: 250px;
-    }
-    .expiration-form input[type="date"] {
-        padding: 0.4rem;
-        border: 1px solid rgba(255, 215, 0, 0.3);
-        background: rgba(0, 0, 0, 0.5);
-        color: #fff;
-        border-radius: 4px;
-        min-width: 150px;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 8px;
     }
     @media (max-width: 1200px) {
         .admin-table {
@@ -450,8 +698,26 @@ if ($admin_flash) {
 <body>
   <header class="top-bar">
     <nav class="nav-links">
-      <a href="dashboard.php">Usuarios</a>
-      <a href="brackets.php">Brackets</a>
+      <a href="dashboard.php">
+        <i class="fas fa-users"></i>
+        Usuarios
+      </a>
+      <form method="GET" action="dashboard.php" class="search-container" id="searchForm">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          name="buscar" 
+          class="search-input" 
+          placeholder="Buscar por nombre, usuario o email..."
+          value="<?php echo htmlspecialchars($busqueda); ?>"
+          id="searchInput"
+          autocomplete="off">
+        <?php if (!empty($busqueda)): ?>
+        <button type="button" class="search-clear visible" id="clearSearch" title="Limpiar búsqueda">
+          <i class="fas fa-times"></i>
+        </button>
+        <?php endif; ?>
+      </form>
       <a href="logout.php">Cerrar Sesión</a>
     </nav>
   </header>
@@ -465,7 +731,7 @@ if ($admin_flash) {
     <?php endif; ?>
     
     <div class="users-grid">
-      <?php if ($result->num_rows > 0): ?>
+      <?php if ($result && $result->num_rows > 0): ?>
         <?php while($row = $result->fetch_assoc()): ?>
           <div class="user-card">
             <div class="user-header">
@@ -513,6 +779,31 @@ if ($admin_flash) {
                 </span>
               </div>
               
+              <?php 
+                // Verificar si el usuario tiene IP asignada y si su VIP no ha expirado
+                $ip_mostrar = '';
+                $vip_activo = false;
+                if (isset($row['ip_servidor']) && !empty($row['ip_servidor'])) {
+                    if (isset($row['fecha_expiracion']) && !empty($row['fecha_expiracion'])) {
+                        $fecha_expiracion = new DateTime($row['fecha_expiracion']);
+                        $fecha_actual = new DateTime();
+                        if ($fecha_expiracion >= $fecha_actual) {
+                            $ip_mostrar = $row['ip_servidor'];
+                            $vip_activo = true;
+                        }
+                    }
+                }
+              ?>
+              
+              <?php if ($ip_mostrar): ?>
+              <div class="detail-row">
+                <span class="detail-label">IP Servidor</span>
+                <span class="detail-value ip-display">
+                  <?php echo htmlspecialchars($ip_mostrar); ?>
+                </span>
+              </div>
+              <?php endif; ?>
+              
               <div class="action-buttons">
                 <a href="gestionar_usuario.php?accion=bloquear&id=<?php echo $row['id']; ?>" 
                    class="btn btn-secondary">
@@ -525,17 +816,36 @@ if ($admin_flash) {
                   <input type="hidden" name="accion" value="expiracion">
                   <input type="date" name="fecha_expiracion" 
                          value="<?php echo $row['fecha_expiracion'] ? $row['fecha_expiracion'] : ''; ?>"
-                         title="Fecha de expiración">
-                  <button type="submit" class="btn btn-primary" title="Guardar fecha">
-                    <i class="fas fa-save"></i>
+                         title="Asignar fecha y convertir en VIP"
+                         class="date-input-vip">
+                  <button type="submit" class="btn btn-vip" title="Asignar fecha y convertir en VIP">
+                    <i class="fas fa-star"></i>
+                    <span>VIP</span>
+                  </button>
+                </form>
+                
+                <form action="gestionar_usuario.php" method="POST" class="ip-form">
+                  <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                  <input type="hidden" name="accion" value="asignar_ip">
+                  <input type="text" 
+                         name="ip_servidor" 
+                         value="<?php echo $ip_mostrar ? htmlspecialchars($ip_mostrar) : ''; ?>"
+                         placeholder="Ej: 192.168.1.100:27015"
+                         class="ip-input"
+                         pattern="^(\d{1,3}\.){3}\d{1,3}(:\d{1,5})?$"
+                         title="Formato: IP:Puerto (ej: 192.168.1.100:27015)">
+                  <button type="submit" class="btn btn-provide-ip" title="Proporcionar IP del servidor">
+                    <i class="fas fa-server"></i>
+                    <span>Proporcionar</span>
                   </button>
                 </form>
                 
                 <a href="gestionar_usuario.php?accion=eliminar&id=<?php echo $row['id']; ?>" 
-                   class="btn btn-danger" 
-                   onclick="return confirm('¿Estás seguro de que quieres eliminar a este usuario?');"
-                   title="Eliminar usuario">
-                  <i class="fas fa-trash"></i>
+                   class="btn btn-delete" 
+                   onclick="return confirm('¿Estás seguro de que quieres eliminar a este usuario?\n\nEsta acción no se puede deshacer.');"
+                   title="Eliminar usuario permanentemente">
+                  <i class="fas fa-trash-alt"></i>
+                  <span>Eliminar</span>
                 </a>
               </div>
             </div>
@@ -543,205 +853,82 @@ if ($admin_flash) {
         <?php endwhile; ?>
       <?php else: ?>
         <div class="no-users">
-          <i class="fas fa-users-slash"></i>
-          <p>No hay usuarios registrados</p>
+          <i class="fas fa-<?php echo !empty($busqueda) ? 'search' : 'users-slash'; ?>"></i>
+          <p>
+            <?php if (!empty($busqueda)): ?>
+              No se encontraron usuarios que coincidan con "<?php echo htmlspecialchars($busqueda); ?>"
+            <?php else: ?>
+              No hay usuarios registrados
+            <?php endif; ?>
+          </p>
+          <?php if (!empty($busqueda)): ?>
+            <a href="dashboard.php" style="color: var(--primary); text-decoration: none; margin-top: 1rem; display: inline-block;">
+              <i class="fas fa-arrow-left"></i> Ver todos los usuarios
+            </a>
+          <?php endif; ?>
         </div>
       <?php endif; ?>
     </div>
-
-    <div class="admin-modules">
-      <div class="admin-card" id="gestion-equipos">
-        <h2>📋 Gestión de Equipos</h2>
-        <form method="POST">
-          <input type="hidden" name="accion" value="agregar_equipo">
-          <div>
-            <label>Nombre del Equipo</label>
-            <input type="text" name="nombre_equipo" placeholder="Ej: Red Dragons" required>
-          </div>
-          <div>
-            <label>Seed</label>
-            <input type="number" name="seed" min="1" max="64" required>
-          </div>
-          <button type="submit" class="btn btn-primary">➕ Agregar Equipo</button>
-        </form>
-
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Seed</th>
-              <th>Equipo</th>
-              <th>Registro</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if (count($equipos) === 0): ?>
-              <tr>
-                <td colspan="4">No hay equipos registrados todavía.</td>
-              </tr>
-            <?php else: ?>
-              <?php foreach ($equipos as $equipo): ?>
-                <tr>
-                  <td>#<?php echo $equipo['seed']; ?></td>
-                  <td><?php echo htmlspecialchars($equipo['nombre']); ?></td>
-                  <td><?php echo date('d/m/Y H:i', strtotime($equipo['fecha_registro'])); ?></td>
-                  <td>
-                    <div class="admin-actions">
-                      <button type="button"
-                              class="btn btn-primary btn-small"
-                              onclick="abrirModalEquipo(<?php echo $equipo['id']; ?>, '<?php echo htmlspecialchars($equipo['nombre']); ?>', <?php echo $equipo['seed']; ?>)">✏️ Editar</button>
-                      <form method="POST" onsubmit="return confirm('¿Eliminar este equipo?');">
-                        <input type="hidden" name="accion" value="eliminar_equipo">
-                        <input type="hidden" name="equipo_id" value="<?php echo $equipo['id']; ?>">
-                        <button type="submit" class="btn btn-danger btn-small">🗑️ Eliminar</button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              <?php endforeach; ?>
-            <?php endif; ?>
-          </tbody>
-        </table>
-
-        <form method="POST" style="margin-top: 1rem;">
-          <input type="hidden" name="accion" value="generar_ronda1">
-          <button class="btn btn-secondary">🎲 Generar Matches Ronda 1</button>
-        </form>
-      </div>
-
-      <div class="admin-card" id="gestion-brackets">
-        <h2>🎮 Matches y Brackets</h2>
-        <div class="admin-table-wrapper">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Bracket</th>
-                <th>Ronda</th>
-                <th>Match</th>
-                <th>Equipo 1</th>
-                <th>P1</th>
-                <th>vs</th>
-                <th>P2</th>
-                <th>Equipo 2</th>
-                <th>Ganador</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php if (count($matches) === 0): ?>
-                <tr>
-                  <td colspan="10">Todavía no hay matches generados.</td>
-                </tr>
-              <?php else: ?>
-                <?php foreach ($matches as $match): ?>
-                  <tr>
-                    <td>
-                      <span class="tag <?php echo $match['bracket_tipo'] === 'winners' ? 'tag-winners' : 'tag-losers'; ?>">
-                        <?php echo strtoupper($match['bracket_tipo']); ?>
-                      </span>
-                    </td>
-                    <td>R<?php echo $match['ronda']; ?></td>
-                    <td>#<?php echo $match['numero_match']; ?></td>
-                    <td><?php echo htmlspecialchars($match['equipo1_nombre'] ?? 'TBD'); ?></td>
-                    <td class="<?php echo ($match['puntos_equipo1'] !== null && $match['puntos_equipo2'] !== null && $match['puntos_equipo1'] > $match['puntos_equipo2']) ? 'score-winner' : 'score-loser'; ?>">
-                      <?php echo $match['puntos_equipo1'] ?? '-'; ?>
-                    </td>
-                    <td style="text-align:center;">vs</td>
-                    <td class="<?php echo ($match['puntos_equipo1'] !== null && $match['puntos_equipo2'] !== null && $match['puntos_equipo2'] > $match['puntos_equipo1']) ? 'score-winner' : 'score-loser'; ?>">
-                      <?php echo $match['puntos_equipo2'] ?? '-'; ?>
-                    </td>
-                    <td><?php echo htmlspecialchars($match['equipo2_nombre'] ?? 'TBD'); ?></td>
-                    <td><?php echo htmlspecialchars($match['ganador_nombre'] ?? '-'); ?></td>
-                    <td>
-                      <button class="btn btn-primary btn-small" onclick="abrirModalMatch(<?php echo $match['id']; ?>, '<?php echo htmlspecialchars($match['equipo1_nombre'] ?? ''); ?>', '<?php echo htmlspecialchars($match['equipo2_nombre'] ?? ''); ?>', <?php echo $match['equipo1_id'] ?? 'null'; ?>, <?php echo $match['equipo2_id'] ?? 'null'; ?>, <?php echo $match['puntos_equipo1'] ?? 0; ?>, <?php echo $match['puntos_equipo2'] ?? 0; ?>)">Actualizar</button>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              <?php endif; ?>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
   </main>
-
-  <div class="modal" id="modalEquipo">
-    <div class="modal-content">
-      <h3>Editar Equipo</h3>
-      <form method="POST" id="formEditarEquipo">
-        <input type="hidden" name="accion" value="editar_equipo">
-        <input type="hidden" name="equipo_id" id="editEquipoId">
-        <div>
-          <label>Nombre</label>
-          <input type="text" name="nombre_equipo" id="editNombreEquipo" required>
-        </div>
-        <div>
-          <label>Seed</label>
-          <input type="number" name="seed" id="editSeed" min="1" required>
-        </div>
-        <div class="modal-actions">
-          <button type="submit" class="btn btn-primary">Guardar cambios</button>
-          <button type="button" class="btn btn-ghost" onclick="cerrarModal('modalEquipo')">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal" id="modalMatch">
-    <div class="modal-content">
-      <h3>Actualizar match</h3>
-      <form method="POST">
-        <input type="hidden" name="accion" value="actualizar_match">
-        <input type="hidden" name="match_id" id="matchId">
-        <input type="hidden" name="equipo1_id" id="matchEquipo1Id">
-        <input type="hidden" name="equipo2_id" id="matchEquipo2Id">
-        <div>
-          <label id="labelEquipo1">Equipo 1</label>
-          <input type="number" min="0" name="puntos_equipo1" id="matchPuntos1" required>
-        </div>
-        <div>
-          <label id="labelEquipo2">Equipo 2</label>
-          <input type="number" min="0" name="puntos_equipo2" id="matchPuntos2" required>
-        </div>
-        <div class="modal-actions">
-          <button type="submit" class="btn btn-primary">Guardar match</button>
-          <button type="button" class="btn btn-ghost" onclick="cerrarModal('modalMatch')">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</body>
-<script>
-  function abrirModalEquipo(id, nombre, seed) {
-    document.getElementById('editEquipoId').value = id;
-    document.getElementById('editNombreEquipo').value = nombre;
-    document.getElementById('editSeed').value = seed;
-    document.getElementById('modalEquipo').classList.add('active');
-  }
-
-  function abrirModalMatch(matchId, equipo1Nombre, equipo2Nombre, equipo1Id, equipo2Id, puntos1, puntos2) {
-    document.getElementById('matchId').value = matchId;
-    document.getElementById('matchEquipo1Id').value = equipo1Id || '';
-    document.getElementById('matchEquipo2Id').value = equipo2Id || '';
-    document.getElementById('labelEquipo1').textContent = equipo1Nombre || 'Equipo 1';
-    document.getElementById('labelEquipo2').textContent = equipo2Nombre || 'Equipo 2';
-    document.getElementById('matchPuntos1').value = puntos1 ?? '';
-    document.getElementById('matchPuntos2').value = puntos2 ?? '';
-    document.getElementById('modalMatch').classList.add('active');
-  }
-
-  function cerrarModal(id) {
-    document.getElementById(id).classList.remove('active');
-  }
-
-  window.addEventListener('click', function (event) {
-    document.querySelectorAll('.modal').forEach(function(modal) {
-      if (event.target === modal) {
-        cerrarModal(modal.id);
+  
+  <script>
+    // Manejar búsqueda al presionar Enter
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const searchValue = this.value.trim();
+        if (searchValue) {
+          document.getElementById('searchForm').submit();
+        } else {
+          window.location.href = 'dashboard.php';
+        }
       }
     });
-  });
-</script>
+
+    // Mostrar/ocultar botón de limpiar
+    const searchInput = document.getElementById('searchInput');
+    const clearButton = document.getElementById('clearSearch');
+    
+    if (searchInput && clearButton) {
+      searchInput.addEventListener('input', function() {
+        if (this.value.length > 0) {
+          clearButton.classList.add('visible');
+        } else {
+          clearButton.classList.remove('visible');
+        }
+      });
+
+      // Limpiar búsqueda
+      clearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        clearButton.classList.remove('visible');
+        window.location.href = 'dashboard.php';
+      });
+    }
+
+    // Agregar botón de limpiar dinámicamente si no existe
+    if (searchInput && !clearButton) {
+      searchInput.addEventListener('input', function() {
+        let clearBtn = document.getElementById('clearSearch');
+        if (!clearBtn && this.value.length > 0) {
+          clearBtn = document.createElement('button');
+          clearBtn.type = 'button';
+          clearBtn.className = 'search-clear visible';
+          clearBtn.id = 'clearSearch';
+          clearBtn.title = 'Limpiar búsqueda';
+          clearBtn.innerHTML = '<i class="fas fa-times"></i>';
+          clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            window.location.href = 'dashboard.php';
+          });
+          searchInput.parentElement.appendChild(clearBtn);
+        } else if (clearBtn && this.value.length === 0) {
+          clearBtn.remove();
+        }
+      });
+    }
+  </script>
+</body>
 </html>
 <?php
 $conn->close();
