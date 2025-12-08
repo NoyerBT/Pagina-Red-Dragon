@@ -26,7 +26,7 @@ class TokenGenerator {
         }
     }
 
-    public function generate_token($player_name, $tournament_name = "L4D2 Tournament") {
+    public function generate_token($player_name, $tournament_name = null, $created_by_user = null) {
         // Generar token único y seguro
         $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
         
@@ -47,7 +47,8 @@ class TokenGenerator {
             'expires_date' => $expires_date->format(DateTime::ISO8601),
             'is_active' => true,
             'used_count' => 0,
-            'last_used' => null
+            'last_used' => null,
+            'created_by_user' => $created_by_user // Guardar el usuario que creó el token
         ];
         
         // Guardar token
@@ -91,21 +92,60 @@ class TokenGenerator {
         return [true, $token_data];
     }
 
-    public function deactivate_token($token_hash) {
-        if (isset($this->tokens[$token_hash])) {
-            $this->tokens[$token_hash]['is_active'] = false;
-            return $this->save_tokens();
+    public function deactivate_token($token_hash, $user = null) {
+        if (!isset($this->tokens[$token_hash])) {
+            return false;
         }
-        return false;
+        
+        // Verificar que el token pertenezca al usuario si se especifica
+        if ($user !== null) {
+            $token_user = isset($this->tokens[$token_hash]['created_by_user']) ? $this->tokens[$token_hash]['created_by_user'] : null;
+            if ($token_user !== $user) {
+                return false; // El token no pertenece a este usuario
+            }
+        }
+        
+        $this->tokens[$token_hash]['is_active'] = false;
+        return $this->save_tokens();
     }
 
-    public function get_token_stats() {
-        $total_tokens = count($this->tokens);
+    public function delete_token($token_hash, $user = null) {
+        if (!isset($this->tokens[$token_hash])) {
+            return false;
+        }
+        
+        // Verificar que el token pertenezca al usuario si se especifica
+        if ($user !== null) {
+            $token_user = isset($this->tokens[$token_hash]['created_by_user']) ? $this->tokens[$token_hash]['created_by_user'] : null;
+            if ($token_user !== $user) {
+                return false; // El token no pertenece a este usuario
+            }
+        }
+        
+        // Eliminar el token completamente
+        unset($this->tokens[$token_hash]);
+        return $this->save_tokens();
+    }
+
+    public function get_token_stats($user = null) {
+        $total_tokens = 0;
         $active_tokens = 0;
         $expired_tokens = 0;
         $now = new DateTime();
         
         foreach ($this->tokens as $token) {
+            // Filtrar por usuario si se especifica
+            if ($user !== null) {
+                $token_user = isset($token['created_by_user']) ? $token['created_by_user'] : null;
+                // Solo contar tokens que tengan el campo created_by_user y coincidan con el usuario actual
+                // Los tokens antiguos sin created_by_user no se cuentan para ningún usuario
+                if ($token_user === null || $token_user !== $user) {
+                    continue; // Saltar tokens de otros usuarios o tokens antiguos sin usuario
+                }
+            }
+            
+            $total_tokens++;
+            
             // Contar activos (is_active true Y no expirado)
             $isActive = isset($token['is_active']) ? $token['is_active'] : true;
             $expiresDate = new DateTime($token['expires_date']);
@@ -124,8 +164,24 @@ class TokenGenerator {
         ];
     }
 
-    public function list_tokens() {
-        return $this->tokens;
+    public function list_tokens($user = null) {
+        if ($user === null) {
+            return $this->tokens;
+        }
+        
+        // Filtrar tokens por usuario
+        // Nota: Los tokens antiguos sin 'created_by_user' no se mostrarán a ningún usuario
+        // para evitar que usuarios vean tokens de otros que fueron creados antes de esta actualización
+        $user_tokens = [];
+        foreach ($this->tokens as $hash => $token) {
+            $token_user = isset($token['created_by_user']) ? $token['created_by_user'] : null;
+            // Solo mostrar tokens que tengan el campo created_by_user y coincidan con el usuario actual
+            if ($token_user !== null && $token_user === $user) {
+                $user_tokens[$hash] = $token;
+            }
+        }
+        
+        return $user_tokens;
     }
 }
 ?>

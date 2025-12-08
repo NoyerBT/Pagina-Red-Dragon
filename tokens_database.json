@@ -6,7 +6,7 @@
         "token_hash": "4db01c49a2cd792f0c4d1e99125865693618fd0e22fecf960b0c07821004518f",
         "created_date": "2025-11-16T14:32:10-0500",
         "expires_date": "2025-12-16T14:32:10-0500",
-        "is_active": true,
+        "is_active": false,
         "used_count": 0,
         "last_used": null
     },
@@ -17,6 +17,39 @@
         "token_hash": "f1c39c6ba8396fbbf7ee2d2bd75036f6334b753964a16e9112c47bf240848449",
         "created_date": "2025-11-16T14:36:51-0500",
         "expires_date": "2025-11-18T14:36:51-0500",
+        "is_active": true,
+        "used_count": 0,
+        "last_used": null
+    },
+    "e565e4648d0b20a2438d4956cf2141263266c3968d56743fefca373e5fdaeb1d": {
+        "player_name": "Whiting",
+        "tournament_name": "L4D2 Tournament",
+        "token": "0N1ENiTrLla0yg3CBvFl4ooWPzcOAjFNbseg__TY2KI",
+        "token_hash": "e565e4648d0b20a2438d4956cf2141263266c3968d56743fefca373e5fdaeb1d",
+        "created_date": "2025-12-09T00:13:11+0100",
+        "expires_date": "2025-12-11T00:13:11+0100",
+        "is_active": false,
+        "used_count": 1,
+        "last_used": "2025-12-09T00:13:28+0100"
+    },
+    "6221b4a944eaf0ab3328cc77f265b24c6db755823a60c987e42b1a09d595a6e0": {
+        "player_name": "Jose",
+        "tournament_name": "L4D2 Tournament",
+        "token": "99ZeJ9-bO9vZkmauxaeJIeBUIlH3PTxXpxr5pF85krA",
+        "token_hash": "6221b4a944eaf0ab3328cc77f265b24c6db755823a60c987e42b1a09d595a6e0",
+        "created_date": "2025-12-09T00:19:32+0100",
+        "expires_date": "2025-12-11T00:19:32+0100",
+        "is_active": true,
+        "used_count": 0,
+        "last_used": null
+    },
+    "3593679d26261dfca7f6ef18dae2c120f4733d76110d941fcb34b9720f9aa899": {
+        "player_name": "juan",
+        "tournament_name": "L4D2 Tournament",
+        "token": "JHvXB1jNnNO2rSJP-ypAy9aZF7aspbBQ9n8HOwq6LJ4",
+        "token_hash": "3593679d26261dfca7f6ef18dae2c120f4733d76110d941fcb34b9720f9aa899",
+        "created_date": "2025-12-09T00:23:01+0100",
+        "expires_date": "2025-12-11T00:23:01+0100",
         "is_active": true,
         "used_count": 0,
         "last_used": null

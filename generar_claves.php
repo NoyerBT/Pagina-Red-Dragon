@@ -8,11 +8,53 @@ if (!isset($_SESSION['usuario'])) {
 }
 
 require_once 'TokenGenerator.php';
+require_once 'cnt/conexion.php';
 
 $generator = new TokenGenerator();
 $message = "";
 $messageType = "";
 $activeTab = 'generate';
+
+// Función para obtener el nombre del torneo del usuario
+function obtener_torneo_usuario($usuario) {
+    global $conn;
+    
+    // Obtener el ID del usuario
+    $stmt = $conn->prepare("SELECT id FROM usuarios WHERE usuario = ? LIMIT 1");
+    if (!$stmt) {
+        return null;
+    }
+    $stmt->bind_param("s", $usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+    
+    if (!$user || !isset($user['id'])) {
+        return null;
+    }
+    
+    $usuario_id = $user['id'];
+    
+    // Verificar si la tabla torneos existe
+    $check_table = $conn->query("SHOW TABLES LIKE 'torneos'");
+    if ($check_table->num_rows == 0) {
+        return null;
+    }
+    
+    // Obtener el torneo más reciente del usuario
+    $stmt = $conn->prepare("SELECT nombre_torneo FROM torneos WHERE usuario_id = ? ORDER BY fecha_creacion DESC LIMIT 1");
+    if (!$stmt) {
+        return null;
+    }
+    $stmt->bind_param("i", $usuario_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $torneo = $result->fetch_assoc();
+    $stmt->close();
+    
+    return $torneo ? $torneo['nombre_torneo'] : null;
+}
 
 // Datos para la vista
 $generated_token = null;
@@ -27,7 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'generate') {
         $player_name = trim($_POST['player_name'] ?? '');
         if (!empty($player_name)) {
-            $generated_token = $generator->generate_token($player_name);
+            $current_user = $_SESSION['usuario']; // Obtener el usuario actual
+            // Obtener el nombre del torneo del usuario, o null si no tiene
+            $tournament_name = obtener_torneo_usuario($current_user);
+            // Si no tiene torneo, usar null (se mostrará como vacío o mensaje)
+            $generated_token = $generator->generate_token($player_name, $tournament_name, $current_user);
             if ($generated_token) {
                 $message = "Token generado exitosamente.";
                 $messageType = "success";
@@ -42,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $activeTab = 'generate';
 
     } elseif ($action === 'validate') {
+        // Esta acción ahora se maneja vía AJAX, pero mantenemos el código por compatibilidad
         $token_to_validate = trim($_POST['token_to_validate'] ?? '');
         if (!empty($token_to_validate)) {
             list($isValid, $result) = $generator->validate_token($token_to_validate);
@@ -50,15 +97,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'data' => $result
             ];
         }
-        $activeTab = 'validate';
+        $activeTab = 'generate'; // Cambiar a generate ya que la pestaña validate ya no existe
 
     } elseif ($action === 'deactivate') {
         $token_hash = $_POST['token_hash'] ?? '';
-        if ($generator->deactivate_token($token_hash)) {
+        $current_user = $_SESSION['usuario']; // Obtener el usuario actual
+        if ($generator->deactivate_token($token_hash, $current_user)) {
             $message = "Token desactivado correctamente.";
             $messageType = "success";
         } else {
-            $message = "Error al desactivar el token.";
+            $message = "Error al desactivar el token. Verifica que el token te pertenezca.";
             $messageType = "error";
         }
         $activeTab = 'manage';
@@ -67,8 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Cargar datos para la pestaña de gestión siempre si es solicitada o por defecto
 if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage') {
-    $token_stats = $generator->get_token_stats();
-    $all_tokens = $generator->list_tokens();
+    $current_user = $_SESSION['usuario']; // Obtener el usuario actual
+    $token_stats = $generator->get_token_stats($current_user); // Filtrar por usuario
+    $all_tokens = $generator->list_tokens($current_user); // Filtrar por usuario
     $activeTab = 'manage';
 }
 ?>
@@ -89,6 +138,8 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
         justify-content: center;
         margin-bottom: 2rem;
         border-bottom: 2px solid #333;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
     .tab-btn {
         background: none;
@@ -111,6 +162,8 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
     .tab-content {
         display: none;
         animation: fadeIn 0.5s ease;
+        width: 100%;
+        max-width: 100%;
     }
     .tab-content.active {
         display: block;
@@ -191,9 +244,197 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
     .status-expired { background: rgba(255, 0, 0, 0.2); color: #ff4444; }
     .status-inactive { background: rgba(128, 128, 128, 0.2); color: #aaa; }
     
+    /* Toast Notification Styles - Minimalista y Centrado */
+    .toast-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        pointer-events: none;
+    }
+    .toast {
+        min-width: 280px;
+        max-width: 350px;
+        padding: 0.9rem 1.4rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        animation: toastFadeIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), toastFadeOut 0.3s ease 2.5s forwards;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        pointer-events: auto;
+    }
+    .toast-success {
+        background: rgba(0, 180, 0, 0.85);
+        color: white;
+    }
+    .toast-error {
+        background: rgba(220, 0, 0, 0.85);
+        color: white;
+    }
+    .toast-icon {
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+    .toast-message {
+        font-weight: 500;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+    }
+    
+    @keyframes toastFadeIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+    
+    @keyframes toastFadeOut {
+        from {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        to {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+    }
+    
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Asegurar layout vertical */
+    .registro-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .tab-content-wrapper {
+        width: 100%;
+        max-width: 1000px;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+    }
+    
+    .registro-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    /* Asegurar que las tarjetas ocupen el ancho completo disponible */
+    .tab-content .registro-card {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Estilos para botones deshabilitados */
+    .registro-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .registro-btn:disabled:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* Estilos del nuevo botón - From Uiverse.io by Spacious74 */
+    .button {
+        cursor: pointer;
+        border: solid 3px #0a0a0a;
+        border-top: none;
+        border-radius: 16px;
+        position: relative;
+        box-shadow: 0px 3px 8px #00000062, 0px 8px 30px -10px #000000a6, 0px 10px 35px -15px #00000071;
+        transition: all 0.3s ease;
+        background: transparent;
+        width: auto;
+        max-width: 400px;
+        margin: 1rem auto 0;
+        display: block;
+    }
+    
+    .button .inner {
+        padding: 10px 24px;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        border-bottom: solid 2px #1a2a3a;
+        border-radius: 13px;
+        background: linear-gradient(180deg, #2a3f5a, #0a0a0a);
+        color: #fff;
+        text-shadow: 1px 1px #000, 0 0 7px #fff;
+    }
+    
+    .button .svgs {
+        position: relative;
+        margin-top: 7px;
+        z-index: 10;
+    }
+    
+    .button .svgs > * {
+        filter: drop-shadow(0 0 5px #fff) drop-shadow(1px 1px 0px #000);
+    }
+    
+    .button .svgs .svg-s {
+        position: absolute;
+        font-size: 0.7rem;
+        left: 16px;
+        top: -3px;
+    }
+    
+    .button .svgs .svg-l {
+        font-size: 0.9rem;
+    }
+    
+    .button:active {
+        box-shadow: none;
+    }
+    
+    .button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .button:disabled:active {
+        box-shadow: 0px 4px 10px #00000062, 0px 10px 40px -10px #000000a6, 0px 12px 45px -15px #00000071;
+    }
+    
+    /* Mejorar responsive */
+    @media (max-width: 768px) {
+        .tabs {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .tab-btn {
+            width: 100%;
+            text-align: center;
+        }
+        .toast {
+            min-width: 250px;
+            max-width: 90%;
+            padding: 0.8rem 1.2rem;
+        }
     }
   </style>
 </head>
@@ -226,20 +467,18 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
     </section>
   </main>
 
-  <section class="section">
-    <div class="registro-container" style="max-width: 1000px;">
-      
-      <?php if ($message): ?>
-        <div class="alert <?php echo $messageType === 'success' ? 'alert-success' : 'alert-error'; ?>" style="padding: 1rem; margin-bottom: 1rem; border-radius: 4px; background: <?php echo $messageType === 'success' ? 'rgba(0,255,0,0.1)' : 'rgba(255,0,0,0.1)'; ?>; border: 1px solid <?php echo $messageType === 'success' ? '#00ff00' : '#ff0000'; ?>; color: white;">
-            <?php echo htmlspecialchars($message); ?>
-        </div>
-      <?php endif; ?>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
 
+  <section class="section">
+    <div class="registro-container">
+      
       <div class="tabs">
         <button class="tab-btn <?php echo $activeTab === 'generate' ? 'active' : ''; ?>" onclick="switchTab('generate')">Generar Token</button>
-        <button class="tab-btn <?php echo $activeTab === 'validate' ? 'active' : ''; ?>" onclick="switchTab('validate')">Validar Token</button>
         <button class="tab-btn <?php echo $activeTab === 'manage' ? 'active' : ''; ?>" onclick="switchTab('manage')">Administrar</button>
       </div>
+
+      <div class="tab-content-wrapper">
 
       <!-- Tab: Generar -->
       <div id="tab-generate" class="tab-content <?php echo $activeTab === 'generate' ? 'active' : ''; ?>">
@@ -247,75 +486,62 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
           <h2>Generar Nuevo Token</h2>
           <p class="plan-note" style="margin-bottom: 20px;">El token tendrá una validez fija de <strong>2 días</strong>.</p>
           
-          <form action="generar_claves.php" method="POST" class="registro-form">
-            <input type="hidden" name="action" value="generate">
+          <form id="generateTokenForm" class="registro-form">
             <div class="form-group">
               <label for="player_name">Nombre del Jugador</label>
               <input type="text" id="player_name" name="player_name" required placeholder="Ingrese nickname del jugador">
             </div>
-            <button type="submit" class="btn primary registro-btn glow-on-hover">Generar Token</button>
+            <button type="submit" class="button" id="generateBtn">
+              <div class="inner">
+                <div class="svgs">
+                  <svg viewBox="0 0 256 256" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="svg-l">
+                    <path d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15" fill="currentColor"></path>
+                  </svg>
+                  <svg viewBox="0 0 256 256" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="svg-s">
+                    <path d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15" fill="currentColor"></path>
+                  </svg>
+                </div>
+                <span id="generateBtnText">Generar Token</span>
+              </div>
+            </button>
           </form>
 
-          <?php if ($generated_token): ?>
+          <!-- Contenedor para mostrar el token generado -->
+          <div id="tokenResultContainer" style="display: none;">
             <div class="result-box">
                 <h3 style="color: #d4af37; margin-bottom: 1rem;">Token Generado Exitosamente</h3>
                 
                 <div class="token-details">
-                    <p><strong>Jugador:</strong> <?php echo htmlspecialchars($generated_token['player_name']); ?></p>
-                    <p><strong>Torneo:</strong> <?php echo htmlspecialchars($generated_token['tournament_name']); ?></p>
-                    <p><strong>Expira:</strong> <?php echo date('d/m/Y H:i', strtotime($generated_token['expires_date'])); ?></p>
+                    <p><strong>Jugador:</strong> <span id="token-player-name"></span></p>
+                    <p><strong>Torneo:</strong> <span id="token-tournament-name"></span></p>
+                    <p><strong>Expira:</strong> <span id="token-expires-date"></span></p>
                     
-                    <div class="token-display" id="token-text"><?php echo htmlspecialchars($generated_token['token']); ?></div>
+                    <div class="token-display" id="token-text"></div>
                     
-                    <div class="btn-group" style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                        <button type="button" onclick="copyToken()" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Copiar Token</button>
+                    <!-- Sección de validación integrada -->
+                    <div style="margin-top: 1.5rem;">
+                      <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="token_to_validate" style="color: #ffe8ba; font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">Validar Token</label>
+                        <input type="text" id="token_to_validate" name="token_to_validate" placeholder="Pegue el token aquí para validar" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(255, 170, 63, 0.4); background: rgba(0, 0, 0, 0.65); color: #fefefe; box-sizing: border-box;">
+                      </div>
+                      
+                      <div class="btn-group" style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; align-items: stretch;">
+                        <button type="button" onclick="copyToken()" class="btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; flex: 1; min-width: 150px; background: rgba(100, 100, 100, 0.8); color: white; border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; border-radius: 8px; font-weight: bold; transition: all 0.3s ease;">Copiar Token</button>
+                        <button type="button" onclick="validateTokenFromInput()" class="btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; flex: 1; min-width: 150px; background: linear-gradient(45deg, #d4af37, #c09b2d); color: #000; border: none; cursor: pointer; border-radius: 8px; font-weight: bold; transition: all 0.3s ease;" id="validateBtnInline">
+                          <span id="validateBtnTextInline">Validar Token</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Contenedor para mostrar el resultado de la validación -->
+                    <div id="validateResultContainer" style="display: none; margin-top: 1.5rem;">
+                      <div class="result-box" id="validateResultBox"></div>
                     </div>
 
                     <div class="qr-container" id="qrcode"></div>
-                    <script type="text/javascript">
-                        var qrcode = new QRCode(document.getElementById("qrcode"), {
-                            text: "<?php echo htmlspecialchars($generated_token['token']); ?>",
-                            width: 128,
-                            height: 128
-                        });
-                    </script>
                 </div>
             </div>
-          <?php endif; ?>
-        </div>
-      </div>
-
-      <!-- Tab: Validar -->
-      <div id="tab-validate" class="tab-content <?php echo $activeTab === 'validate' ? 'active' : ''; ?>">
-        <div class="registro-card">
-          <h2>Validar Token</h2>
-          <form action="generar_claves.php" method="POST" class="registro-form">
-            <input type="hidden" name="action" value="validate">
-            <div class="form-group">
-              <label for="token_to_validate">Ingrese Token</label>
-              <input type="text" id="token_to_validate" name="token_to_validate" required placeholder="Pegue el token aquí">
-            </div>
-            <button type="submit" class="btn primary registro-btn glow-on-hover">Validar</button>
-          </form>
-
-          <?php if ($validation_result): ?>
-            <div class="result-box">
-                <?php if ($validation_result['valid']): ?>
-                    <h3 style="color: #00ff00;">✅ Token Válido</h3>
-                    <?php $data = $validation_result['data']; ?>
-                    <div style="margin-top: 1rem; line-height: 1.6;">
-                        <p><strong>Jugador:</strong> <?php echo htmlspecialchars($data['player_name']); ?></p>
-                        <p><strong>Torneo:</strong> <?php echo htmlspecialchars($data['tournament_name']); ?></p>
-                        <p><strong>Creado:</strong> <?php echo date('d/m/Y H:i', strtotime($data['created_date'])); ?></p>
-                        <p><strong>Expira:</strong> <?php echo date('d/m/Y H:i', strtotime($data['expires_date'])); ?></p>
-                        <p><strong>Usos:</strong> <?php echo $data['used_count']; ?></p>
-                    </div>
-                <?php else: ?>
-                    <h3 style="color: #ff4444;">❌ Token Inválido</h3>
-                    <p style="margin-top: 1rem;"><?php echo htmlspecialchars($validation_result['data']); ?></p>
-                <?php endif; ?>
-            </div>
-          <?php endif; ?>
+          </div>
         </div>
       </div>
 
@@ -327,7 +553,19 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
           <?php if (!$token_stats): ?>
              <form action="generar_claves.php" method="GET">
                 <input type="hidden" name="tab" value="manage">
-                <button type="submit" class="btn primary registro-btn glow-on-hover">Cargar Datos</button>
+                <button type="submit" class="button">
+                  <div class="inner">
+                    <div class="svgs">
+                      <svg viewBox="0 0 256 256" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="svg-l">
+                        <path d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15" fill="currentColor"></path>
+                      </svg>
+                      <svg viewBox="0 0 256 256" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" class="svg-s">
+                        <path d="M240 128a15.79 15.79 0 0 1-10.5 15l-63.44 23.07L143 229.5a16 16 0 0 1-30 0l-23.06-63.44L26.5 143a16 16 0 0 1 0-30l63.44-23.06L113 26.5a16 16 0 0 1 30 0l23.07 63.44L229.5 113a15.79 15.79 0 0 1 10.5 15" fill="currentColor"></path>
+                      </svg>
+                    </div>
+                    Cargar Datos
+                  </div>
+                </button>
              </form>
           <?php else: ?>
             <div class="stats-grid">
@@ -380,13 +618,12 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
                             <td><?php echo date('d/m/Y', strtotime($t['expires_date'])); ?></td>
                             <td><?php echo $t['used_count'] ?? 0; ?></td>
                             <td>
-                                <?php if ($is_active && !$is_expired): ?>
-                                    <form action="generar_claves.php" method="POST" style="display:inline;">
-                                        <input type="hidden" name="action" value="deactivate">
-                                        <input type="hidden" name="token_hash" value="<?php echo $hash; ?>">
-                                        <button type="submit" class="btn exception" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: #660000; color: white; border: none; cursor: pointer;">Desactivar</button>
-                                    </form>
-                                <?php endif; ?>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <?php if ($is_active && !$is_expired): ?>
+                                        <button type="button" onclick="deactivateToken('<?php echo $hash; ?>', this)" class="btn exception" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: #660000; color: white; border: none; cursor: pointer; border-radius: 4px;">Desactivar</button>
+                                    <?php endif; ?>
+                                    <button type="button" onclick="deleteToken('<?php echo $hash; ?>', this)" class="btn exception" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: #8B0000; color: white; border: none; cursor: pointer; border-radius: 4px;">Eliminar</button>
+                                </div>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -397,12 +634,49 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
         </div>
       </div>
 
+      </div>
     </div>
   </section>
 
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>
   <script>
+    // Función para mostrar toast
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        
+        const icon = type === 'success' ? '✓' : '✕';
+        toast.innerHTML = `
+            <span class="toast-icon">${icon}</span>
+            <span class="toast-message">${message}</span>
+        `;
+        
+        // Limpiar toasts anteriores antes de agregar uno nuevo
+        container.innerHTML = '';
+        container.appendChild(toast);
+        
+        // Remover automáticamente después de 2.8 segundos
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.style.animation = 'toastFadeOut 0.3s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 300);
+            }
+        }, 2800);
+    }
+
+    // Mostrar toast si hay mensaje del servidor
+    <?php if ($message): ?>
+        window.addEventListener('DOMContentLoaded', function() {
+            showToast('<?php echo htmlspecialchars($message, ENT_QUOTES); ?>', '<?php echo $messageType; ?>');
+        });
+    <?php endif; ?>
+
     function switchTab(tabId) {
         // Hide all tabs
         document.querySelectorAll('.tab-content').forEach(tab => {
@@ -421,7 +695,7 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
     function copyToken() {
         const tokenText = document.getElementById('token-text').innerText;
         navigator.clipboard.writeText(tokenText).then(() => {
-            alert('Token copiado al portapapeles');
+            showToast('Token copiado al portapapeles', 'success');
         }).catch(err => {
             // Fallback para navegadores que no soportan clipboard API o no están en contexto seguro
             const textArea = document.createElement("textarea");
@@ -431,12 +705,298 @@ if ($activeTab === 'manage' || isset($_GET['tab']) && $_GET['tab'] === 'manage')
             textArea.select();
             try {
                 document.execCommand('copy');
-                alert('Token copiado al portapapeles');
+                showToast('Token copiado al portapapeles', 'success');
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
+                showToast('Error al copiar el token', 'error');
             }
             document.body.removeChild(textArea);
         });
+    }
+
+    // Manejar formulario de generar token con AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateForm = document.getElementById('generateTokenForm');
+        if (generateForm) {
+            generateForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                formData.append('action', 'generate');
+                
+                const generateBtn = document.getElementById('generateBtn');
+                const generateBtnText = document.getElementById('generateBtnText');
+                const originalText = generateBtnText ? generateBtnText.textContent : 'Generar Token';
+                
+                // Deshabilitar botón y mostrar loading
+                generateBtn.disabled = true;
+                if (generateBtnText) {
+                    generateBtnText.textContent = 'Generando...';
+                }
+                
+                fetch('ajax_tokens.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    generateBtn.disabled = false;
+                    if (generateBtnText) {
+                        generateBtnText.textContent = originalText;
+                    }
+                    
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        displayGeneratedToken(data.token);
+                        // Limpiar formulario
+                        generateForm.reset();
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    generateBtn.disabled = false;
+                    if (generateBtnText) {
+                        generateBtnText.textContent = originalText;
+                    }
+                    showToast('Error al generar el token', 'error');
+                    console.error('Error:', error);
+                });
+            });
+        }
+
+        // Permitir validar con Enter en el input
+        const tokenToValidateInput = document.getElementById('token_to_validate');
+        if (tokenToValidateInput) {
+            tokenToValidateInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    validateTokenFromInput();
+                }
+            });
+        }
+    });
+
+    // Función para mostrar el token generado
+    function displayGeneratedToken(tokenData) {
+        const container = document.getElementById('tokenResultContainer');
+        const playerName = document.getElementById('token-player-name');
+        const tournamentName = document.getElementById('token-tournament-name');
+        const expiresDate = document.getElementById('token-expires-date');
+        const tokenText = document.getElementById('token-text');
+        const qrContainer = document.getElementById('qrcode');
+        
+        // Llenar datos
+        playerName.textContent = tokenData.player_name;
+        // Mostrar el nombre del torneo o un mensaje si no tiene
+        if (tokenData.tournament_name && tokenData.tournament_name.trim() !== '') {
+            tournamentName.textContent = tokenData.tournament_name;
+        } else {
+            tournamentName.textContent = 'Sin torneo asignado';
+            tournamentName.style.color = '#888';
+            tournamentName.style.fontStyle = 'italic';
+        }
+        
+        // Formatear fecha
+        const expires = new Date(tokenData.expires_date);
+        const formattedDate = expires.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        expiresDate.textContent = formattedDate;
+        
+        tokenText.textContent = tokenData.token;
+        
+        // Limpiar QR anterior y generar nuevo
+        qrContainer.innerHTML = '';
+        const qrcode = new QRCode(qrContainer, {
+            text: tokenData.token,
+            width: 128,
+            height: 128
+        });
+        
+        // Mostrar contenedor
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Función para mostrar el resultado de la validación
+    function displayValidationResult(data, isValid) {
+        const container = document.getElementById('validateResultContainer');
+        const resultBox = document.getElementById('validateResultBox');
+        
+        if (isValid) {
+            const formattedCreated = new Date(data.created_date).toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const formattedExpires = new Date(data.expires_date).toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const tournamentDisplay = (data.tournament_name && data.tournament_name.trim() !== '') 
+                ? escapeHtml(data.tournament_name) 
+                : '<span style="color: #888; font-style: italic;">Sin torneo asignado</span>';
+            
+            resultBox.innerHTML = `
+                <h3 style="color: #00ff00; margin-bottom: 1rem;">✅ Token Válido</h3>
+                <div style="margin-top: 1rem; line-height: 1.6;">
+                    <p><strong>Jugador:</strong> ${escapeHtml(data.player_name)}</p>
+                    <p><strong>Torneo:</strong> ${tournamentDisplay}</p>
+                    <p><strong>Creado:</strong> ${formattedCreated}</p>
+                    <p><strong>Expira:</strong> ${formattedExpires}</p>
+                    <p><strong>Usos:</strong> ${data.used_count || 0}</p>
+                </div>
+            `;
+        } else {
+            resultBox.innerHTML = `
+                <h3 style="color: #ff4444; margin-bottom: 1rem;">❌ Token Inválido</h3>
+                <p style="margin-top: 1rem;">${escapeHtml(data)}</p>
+            `;
+        }
+        
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Función para validar token desde el input integrado
+    function validateTokenFromInput() {
+        const tokenInput = document.getElementById('token_to_validate');
+        const validateBtn = document.getElementById('validateBtnInline');
+        const validateBtnText = document.getElementById('validateBtnTextInline');
+        
+        if (!tokenInput || !tokenInput.value.trim()) {
+            showToast('Por favor ingrese un token para validar', 'error');
+            return;
+        }
+        
+        const originalText = validateBtnText.textContent;
+        const formData = new FormData();
+        formData.append('action', 'validate');
+        formData.append('token_to_validate', tokenInput.value.trim());
+        
+        // Deshabilitar botón y mostrar loading
+        validateBtn.disabled = true;
+        validateBtnText.textContent = 'Validando...';
+        
+        fetch('ajax_tokens.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            validateBtn.disabled = false;
+            validateBtnText.textContent = originalText;
+            
+            if (data.success) {
+                if (data.valid) {
+                    showToast('Token válido', 'success');
+                    displayValidationResult(data.data, true);
+                } else {
+                    showToast(data.message, 'error');
+                    displayValidationResult(data.message, false);
+                }
+            } else {
+                showToast(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            validateBtn.disabled = false;
+            validateBtnText.textContent = originalText;
+            showToast('Error al validar el token', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+    // Función para desactivar token (sin confirmación)
+    function deactivateToken(tokenHash, buttonElement) {
+        const formData = new FormData();
+        formData.append('action', 'deactivate');
+        formData.append('token_hash', tokenHash);
+        
+        // Deshabilitar botón
+        const originalText = buttonElement.textContent;
+        buttonElement.disabled = true;
+        buttonElement.textContent = 'Desactivando...';
+        
+        fetch('ajax_tokens.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                // Recargar la página para actualizar la tabla
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            } else {
+                showToast(data.message, 'error');
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        })
+        .catch(error => {
+            showToast('Error al desactivar el token', 'error');
+            buttonElement.disabled = false;
+            buttonElement.textContent = originalText;
+            console.error('Error:', error);
+        });
+    }
+
+    // Función para eliminar token (sin confirmación)
+    function deleteToken(tokenHash, buttonElement) {
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('token_hash', tokenHash);
+        
+        // Deshabilitar botón
+        const originalText = buttonElement.textContent;
+        buttonElement.disabled = true;
+        buttonElement.textContent = 'Eliminando...';
+        
+        fetch('ajax_tokens.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                // Recargar la página para actualizar la tabla
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            } else {
+                showToast(data.message, 'error');
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        })
+        .catch(error => {
+            showToast('Error al eliminar el token', 'error');
+            buttonElement.disabled = false;
+            buttonElement.textContent = originalText;
+            console.error('Error:', error);
+        });
+    }
+
+    // Función auxiliar para escapar HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
   </script>
 </body>

@@ -56,9 +56,9 @@ session_start();
           <h3>WHITING</h3>
           <p class="team-card__role">Fundador & Administrador Principal</p>
           <div class="team-card__contacts">
-            <a href="https://wa.me/51959214173" class="team-contact-item" target="_blank" rel="noopener noreferrer">
-              <span class="contact-icon">📱</span>
-              <span>+51 959214173</span>
+            <a href="https://discord.gg/Sc6Mv9Q7" class="team-contact-item" target="_blank" rel="noopener noreferrer">
+              <span class="contact-icon"><img src="Img/logodisc.png" alt="Discord" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
+              <span>Discord Server</span>
             </a>
              <a href="https://guns.lol/whiting" class="team-contact-item">
               <span class="contact-icon">🔗</span>
@@ -85,7 +85,7 @@ session_start();
               <span>guns.lol/neelsonh</span>
             </a>
             <div class="team-contact-item">
-              <span class="contact-icon">DISC 💬</span>
+              <span class="contact-icon"><img src="Img/logodisc.png" alt="Discord" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
               <span>hq27_27364</span>
             </div>
           </div>
@@ -109,7 +109,7 @@ session_start();
               <span>iamvallolet07@gmail.com</span>
             </a>
             <div class="team-contact-item">
-              <span class="contact-icon"> DISC 💬</span>
+              <span class="contact-icon"><img src="Img/logodisc.png" alt="Discord" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;"></span>
               <span>you_vallolet</span>
             </div>
           </div>
