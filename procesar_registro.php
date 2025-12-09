@@ -34,6 +34,15 @@ try {
         throw new Exception("Por favor, ingresa un correo electrónico válido.");
     }
 
+    // Validar dominio del correo
+    $allowed_domains = ['gmail.com', 'hotmail.com'];
+    $email_parts = explode('@', $email);
+    $domain = end($email_parts);
+
+    if (!in_array(strtolower($domain), $allowed_domains)) {
+        throw new Exception("Solo se permiten correos de Gmail o Hotmail.");
+    }
+
     if ($password_form !== $confirm_password) {
         throw new Exception("Las contraseñas no coinciden.");
     }
