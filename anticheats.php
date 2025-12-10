@@ -256,7 +256,7 @@ if (isset($_SESSION['usuario'])) {
 
   <section class="section" id="anticheat-info">
     <h2>¿Qué es nuestro Anticheat?</h2>
-    <p>Nuestro sistema anticheat garantiza un entorno de juego justo y competitivo para todos los usuarios que adquieren para sus torneos.</p>
+    <p>Nuestro sistema anticheat garantiza un entorno de juego justo y competitivo para todos los participantes del torneo Red Dragons Cup.</p>
     
     <div class="features-grid">
       <div class="feature-card">
