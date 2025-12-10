@@ -113,6 +113,38 @@ if (isset($_SESSION['usuario'])) {
             </div>
           </a>
         </div>
+        <!-- Botón Betas (Nuevo VIP) -->
+        <div class="btn-wrapper plan-actions__btn">
+          <button onclick="openModal()" class="btn" style="border: none; cursor: pointer;">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">B</span><span class="btn-letter">e</span><span class="btn-letter">t</span><span class="btn-letter">a</span><span class="btn-letter">s</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">B</span><span class="btn-letter">e</span><span class="btn-letter">t</span><span class="btn-letter">a</span><span class="btn-letter">s</span>
+              </div>
+            </div>
+          </button>
+        </div>
+        <!-- Botón OPF (Nuevo VIP) -->
+        <div class="btn-wrapper plan-actions__btn">
+          <a href="https://github.com/HQ27x/anticheatRDC/releases/download/updates/OPF-decoder.exe" class="btn">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.794-.43l-8.916 8.916a2.25 2.25 0 00-1.932 5.861" />
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">O</span><span class="btn-letter">P</span><span class="btn-letter">F</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">O</span><span class="btn-letter">P</span><span class="btn-letter">F</span>
+              </div>
+            </div>
+          </a>
+        </div>
       <?php elseif (isset($_SESSION['usuario']) && !$vip_activo): ?>
         <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.7);">
           <h3 style="color: #d4af37; margin-bottom: 1rem;">⭐ Acceso VIP Requerido</h3>
@@ -128,6 +160,22 @@ if (isset($_SESSION['usuario'])) {
                 </div>
                 <div class="txt-2">
                   <span class="btn-letter">A</span><span class="btn-letter">d</span><span class="btn-letter">q</span><span class="btn-letter">u</span><span class="btn-letter">i</span><span class="btn-letter">r</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+                </div>
+              </div>
+            </a>
+          </div>
+          <!-- Botón OPF (Nuevo No-VIP) -->
+          <div class="btn-wrapper plan-actions__btn" style="margin-top: 2rem; display: inline-block; margin-left: 10px;">
+            <a href="https://github.com/HQ27x/anticheatRDC/releases/download/updates/OPF-decoder.exe" class="btn">
+              <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.794-.43l-8.916 8.916a2.25 2.25 0 00-1.932 5.861" />
+              </svg>
+              <div class="txt-wrapper">
+                <div class="txt-1">
+                  <span class="btn-letter">O</span><span class="btn-letter">P</span><span class="btn-letter">F</span>
+                </div>
+                <div class="txt-2">
+                  <span class="btn-letter">O</span><span class="btn-letter">P</span><span class="btn-letter">F</span>
                 </div>
               </div>
             </a>
@@ -160,6 +208,22 @@ if (isset($_SESSION['usuario'])) {
               </div>
               <div class="txt-2">
                 <span class="btn-letter">A</span><span class="btn-letter">d</span><span class="btn-letter">q</span><span class="btn-letter">u</span><span class="btn-letter">i</span><span class="btn-letter">r</span><span class="btn-letter">i</span><span class="btn-letter">e</span><span class="btn-letter">n</span><span class="btn-letter">d</span><span class="btn-letter">o</span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- Botón OPF (Nuevo Visitante) -->
+        <div class="btn-wrapper plan-actions__btn">
+          <a href="https://github.com/HQ27x/anticheatRDC/releases/download/updates/OPF-decoder.exe" class="btn">
+            <svg class="btn-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.794-.43l-8.916 8.916a2.25 2.25 0 00-1.932 5.861" />
+            </svg>
+            <div class="txt-wrapper">
+              <div class="txt-1">
+                <span class="btn-letter">O</span><span class="btn-letter">P</span><span class="btn-letter">F</span>
+              </div>
+              <div class="txt-2">
+                <span class="btn-letter">O</span><span class="btn-letter">P</span><span class="btn-letter">F</span>
               </div>
             </div>
           </a>
@@ -281,5 +345,91 @@ if (isset($_SESSION['usuario'])) {
 
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>
+  <!-- Modal para Betas -->
+  <div id="betaModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3>Elige cuál probar</h3>
+      <p>Selecciona una versión beta para descargar:</p>
+      <a href="https://github.com/HQ27x/anticheatRDC/releases/download/beta/rdcbetav5.exe" class="btn-modal">Versión Beta V5</a>
+    </div>
+  </div>
+
+  <style>
+    /* Estilos del Modal */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0; 
+      top: 0; 
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background-color: rgba(0,0,0,0.8); 
+      backdrop-filter: blur(5px);
+    }
+    .modal-content {
+      background-color: #1a1a1a;
+      margin: 15% auto; 
+      padding: 30px; 
+      border: 1px solid #d4af37; 
+      width: 90%; 
+      max-width: 400px; 
+      color: #fff; 
+      text-align: center; 
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+      animation: modalFadeIn 0.3s;
+    }
+    .close {
+      color: #aaa; 
+      float: right; 
+      font-size: 28px; 
+      font-weight: bold; 
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close:hover,
+    .close:focus {
+      color: #d4af37; 
+      text-decoration: none; 
+      cursor: pointer;
+    }
+    .btn-modal {
+      display: inline-block; 
+      padding: 12px 25px; 
+      background: linear-gradient(45deg, #d4af37, #f2d06b);
+      color: #000; 
+      text-decoration: none; 
+      border-radius: 30px; 
+      margin-top: 20px; 
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-modal:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+    @keyframes modalFadeIn {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+
+  <script>
+    // Lógica del Modal
+    function openModal() {
+      document.getElementById("betaModal").style.display = "block";
+    }
+    function closeModal() {
+      document.getElementById("betaModal").style.display = "none";
+    }
+    window.onclick = function(event) {
+      if (event.target == document.getElementById("betaModal")) {
+        closeModal();
+      }
+    }
+  </script>
 </body>
 </html>
