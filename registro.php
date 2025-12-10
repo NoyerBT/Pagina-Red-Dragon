@@ -152,7 +152,7 @@ if (isset($_SESSION['usuario'])) {
     <h2>💳 Métodos de Pago Disponibles</h2>
     <div class="payment-methods">
       <div class="payment-card">
-        <h3>💳 Deposito Lemon Card - Cuaquier banco </h3>
+        <h3>💳 Deposito Lemon Card - Cualquier banco </h3>
         <p>Lemon Card CCI</p>
       </div>
       <div class="payment-card">
@@ -162,6 +162,10 @@ if (isset($_SESSION['usuario'])) {
       <div class="payment-card">
         <h3>🏦 Transferencia Bancaria solo BCP</h3>
         <p>BCP CCI</p>
+      </div>
+      <div class="payment-card">
+        <h3>💳 PayPal</h3>
+        <p>Pago seguro con PayPal</p>
       </div>
     </div>
   </section>
