@@ -2622,6 +2622,17 @@ body {
   padding: 0 2rem;
 }
 
+/* Cuando solo hay un método de pago (extranjeros) */
+.payment-methods-extranjero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin: 2rem auto;
+  max-width: 300px;
+  justify-items: center;
+  padding: 0 2rem;
+}
+
 .payment-card {
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(30, 30, 30, 0.7) 100%);
   border: 2px solid rgba(212, 175, 55, 0.3);
@@ -2678,12 +2689,24 @@ body {
     grid-template-columns: repeat(2, 1fr);
     max-width: 800px;
   }
+  
+  .payment-methods:has(.payment-card:only-child),
+  .payment-methods-extranjero {
+    grid-template-columns: 1fr;
+    max-width: 300px;
+  }
 }
 
 @media (max-width: 768px) {
   .payment-methods {
     grid-template-columns: 1fr;
     max-width: 400px;
+  }
+  
+  .payment-methods:has(.payment-card:only-child),
+  .payment-methods-extranjero {
+    grid-template-columns: 1fr;
+    max-width: 300px;
   }
 }
 

@@ -4,17 +4,34 @@ session_start();
 // Verificar si el usuario es VIP
 $es_vip = false;
 $vip_activo = false;
+$es_peru = true; // Por defecto mostrar precio en soles
 
 if (isset($_SESSION['usuario'])) {
     require_once 'cnt/conexion.php';
     
-    $sql = "SELECT vip, fecha_expiracion FROM usuarios WHERE usuario = ? LIMIT 1";
+    // Verificar si existe la columna pais
+    $check_pais = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'pais'");
+    $pais_column_exists = $check_pais && $check_pais->num_rows > 0;
+    
+    if ($pais_column_exists) {
+        $sql = "SELECT vip, fecha_expiracion, pais FROM usuarios WHERE usuario = ? LIMIT 1";
+    } else {
+        $sql = "SELECT vip, fecha_expiracion FROM usuarios WHERE usuario = ? LIMIT 1";
+    }
+    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $_SESSION['usuario']);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($user = $result->fetch_assoc()) {
+        // Verificar si es de Perú
+        if ($pais_column_exists && isset($user['pais']) && $user['pais'] === 'PE') {
+            $es_peru = true;
+        } elseif ($pais_column_exists && isset($user['pais']) && $user['pais'] !== 'PE') {
+            $es_peru = false;
+        }
+        
         // Verificar explícitamente que vip sea exactamente 1 (no null, no 0, no string)
         if (isset($user['vip']) && $user['vip'] == 1 && $user['vip'] !== '0' && $user['vip'] !== 0) {
             $es_vip = true;
@@ -266,8 +283,8 @@ if (isset($_SESSION['usuario'])) {
           <span class="plan-card-modern__eyebrow">Protección total</span>
           <h3>🏆 Plan Premium</h3>
           <p class="plan-card-modern__price">
-            <span class="currency">S/</span>
-            <span class="amount">40</span>
+            <span class="currency"><?php echo $es_peru ? 'S/' : '$'; ?></span>
+            <span class="amount"><?php echo $es_peru ? '40' : '12'; ?></span>
             <span class="period">/mes</span>
           </p>
           <p class="plan-card-modern__subtitle">La mejor defensa contra cheats para equipos competitivos.</p>

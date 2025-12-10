@@ -113,7 +113,7 @@ if (isset($_SESSION['usuario'])) {
             <h3>📋 Resumen del Plan</h3>
             <div class="plan-details">
               <p><strong>Plan Anticheat Premium</strong></p>
-              <p>Precio: <span class="price-highlight">S/ 30.00 / mes</span></p>
+              <p>Precio: <span class="price-highlight" id="precio-display">S/ 40.00 / mes</span></p>
               <ul>
                 <li>✓ Soporte 24/7</li>
                 <li>✓ Acceso a canal privado de Whatsapp</li>
@@ -150,22 +150,32 @@ if (isset($_SESSION['usuario'])) {
 
   <section class="section" id="metodos-pago">
     <h2>💳 Métodos de Pago Disponibles</h2>
-    <div class="payment-methods">
-      <div class="payment-card">
-        <h3>💳 Deposito Lemon Card - Cualquier banco </h3>
-        <p>Lemon Card CCI</p>
+    <div class="payment-methods" id="payment-methods-container">
+      <!-- Métodos para Perú -->
+      <div class="payment-methods-peru" id="metodos-peru">
+        <div class="payment-card">
+          <h3>💳 Deposito Lemon Card - desde cualquier banco </h3>
+          <p>Lemon Card CCI</p>
+        </div>
+        <div class="payment-card">
+          <h3>📱 Lemon Card</h3>
+          <p>Pago móvil QR instantáneo</p>
+        </div>
+        <div class="payment-card">
+          <h3>🏦 Transferencia Bancaria solo BCP</h3>
+          <p>BCP CCI</p>
+        </div>
+        <div class="payment-card">
+          <h3>💳 PayPal</h3>
+          <p>Pago seguro con PayPal</p>
+        </div>
       </div>
-      <div class="payment-card">
-        <h3>📱 Lemon Card</h3>
-        <p>Pago móvil QR instantáneo</p>
-      </div>
-      <div class="payment-card">
-        <h3>🏦 Transferencia Bancaria solo BCP</h3>
-        <p>BCP CCI</p>
-      </div>
-      <div class="payment-card">
-        <h3>💳 PayPal</h3>
-        <p>Pago seguro con PayPal</p>
+      <!-- Métodos para extranjeros (solo PayPal) -->
+      <div class="payment-methods-extranjero" id="metodos-extranjero" style="display: none;">
+        <div class="payment-card">
+          <h3>💳 PayPal</h3>
+          <p>Pago seguro con PayPal</p>
+        </div>
       </div>
     </div>
   </section>
@@ -173,5 +183,42 @@ if (isset($_SESSION['usuario'])) {
   <script src="scripts.js"></script>
   <script src="page-animations.js"></script>
   <script src="registro-validation.js"></script>
+  <script>
+    // Función para actualizar métodos de pago y precio según el país
+    function actualizarMetodosPago() {
+      const paisSelect = document.getElementById('pais');
+      const pais = paisSelect.value;
+      const metodosPeru = document.getElementById('metodos-peru');
+      const metodosExtranjero = document.getElementById('metodos-extranjero');
+      const precioDisplay = document.getElementById('precio-display');
+      
+      if (pais === 'PE') {
+        // Usuario de Perú - mostrar todos los métodos y precio en soles
+        metodosPeru.style.display = 'grid';
+        metodosExtranjero.style.display = 'none';
+        precioDisplay.textContent = 'S/ 40.00 / mes';
+      } else if (pais && pais !== '') {
+        // Usuario extranjero - solo PayPal y precio en dólares
+        metodosPeru.style.display = 'none';
+        metodosExtranjero.style.display = 'grid';
+        precioDisplay.textContent = '$ 12.00 / mes';
+      } else {
+        // Sin país seleccionado - mostrar métodos de Perú por defecto
+        metodosPeru.style.display = 'grid';
+        metodosExtranjero.style.display = 'none';
+        precioDisplay.textContent = 'S/ 40.00 / mes';
+      }
+    }
+    
+    // Agregar evento al selector de país
+    document.addEventListener('DOMContentLoaded', function() {
+      const paisSelect = document.getElementById('pais');
+      if (paisSelect) {
+        paisSelect.addEventListener('change', actualizarMetodosPago);
+        // Inicializar al cargar la página
+        actualizarMetodosPago();
+      }
+    });
+  </script>
 </body>
 </html>

@@ -97,7 +97,7 @@ $conn->close();
           <h3 style="color: #d4af37; margin-bottom: 1rem; font-size: 1.2rem;">📋 Resumen del Plan</h3>
           <div class="plan-details">
             <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong>Plan Anticheat Premium</strong></p>
-            <p style="font-size: 1.3rem; color: #d4af37; font-weight: bold; margin: 1rem 0;">Precio: <span class="price-highlight">S/ 40.00 / mes</span></p>
+            <p style="font-size: 1.3rem; color: #d4af37; font-weight: bold; margin: 1rem 0;">Precio: <span class="price-highlight"><?php echo $es_peru ? 'S/ 40.00' : '$ 12.00'; ?> / mes</span></p>
             <ul style="list-style: none; padding: 0; margin-top: 1rem;">
               <li style="margin: 0.5rem 0; color: rgba(255, 255, 255, 0.8);">✓ Soporte 24/7</li>
               <li style="margin: 0.5rem 0; color: rgba(255, 255, 255, 0.8);">✓ Acceso a canal privado de Whatsapp</li>
@@ -136,22 +136,31 @@ $conn->close();
   <section class="section" id="metodos-pago">
     <h2 style="color: #d4af37; text-align: center; margin-bottom: 2rem; font-size: 2rem; text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);">💳 Métodos de Pago Disponibles</h2>
     <div class="payment-methods">
-      <div class="payment-card">
-        <h3>💳 Deposito Lemon Card - Cualquier banco</h3>
-        <p>Lemon Card CCI</p>
-      </div>
-      <div class="payment-card">
-        <h3>📱 Lemon Card</h3>
-        <p>Pago móvil QR instantáneo</p>
-      </div>
-      <div class="payment-card">
-        <h3>🏦 Transferencia Bancaria solo BCP</h3>
-        <p>BCP</p>
-      </div>
-      <div class="payment-card">
-        <h3>💳 Pagos con PAY PAL</h3>
-        <p>QR de Pay Pal</p>
-      </div>
+      <?php if ($es_peru): ?>
+        <!-- Métodos para usuarios de Perú -->
+        <div class="payment-card">
+          <h3>💳 Deposito Lemon Card - Cualquier banco</h3>
+          <p>Lemon Card CCI</p>
+        </div>
+        <div class="payment-card">
+          <h3>📱 Lemon Card</h3>
+          <p>Pago móvil QR instantáneo</p>
+        </div>
+        <div class="payment-card">
+          <h3>🏦 Transferencia Bancaria solo BCP</h3>
+          <p>BCP</p>
+        </div>
+        <div class="payment-card">
+          <h3>💳 Pagos con PAY PAL</h3>
+          <p>QR de Pay Pal</p>
+        </div>
+      <?php else: ?>
+        <!-- Solo PayPal para usuarios extranjeros -->
+        <div class="payment-card">
+          <h3>💳 PayPal</h3>
+          <p>Pago seguro con PayPal</p>
+        </div>
+      <?php endif; ?>
     </div>
   </section>
 
@@ -171,7 +180,7 @@ $conn->close();
       <div class="modal-pago-body">
         <div class="pago-info-header" style="background: rgba(212, 175, 55, 0.1); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid rgba(212, 175, 55, 0.3);">
           <p style="color: rgba(255, 255, 255, 0.9); margin: 0.5rem 0;"><strong>Usuario:</strong> <span id="modalUsuario"><?php echo htmlspecialchars($user['usuario']); ?></span></p>
-          <p style="color: rgba(255, 255, 255, 0.9); margin: 0.5rem 0;"><strong>Monto a Pagar:</strong> <span style="color: #d4af37; font-size: 1.2rem; font-weight: bold;">S/ 40.00</span></p>
+          <p style="color: rgba(255, 255, 255, 0.9); margin: 0.5rem 0;"><strong>Monto a Pagar:</strong> <span style="color: #d4af37; font-size: 1.2rem; font-weight: bold;"><?php echo $es_peru ? 'S/ 40.00' : '$ 12.00'; ?></span></p>
         </div>
 
         <div id="metodosPagoPeru" style="<?php echo $es_peru ? '' : 'display: none;'; ?>">
